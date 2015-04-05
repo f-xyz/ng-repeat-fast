@@ -1,4 +1,4 @@
-var N = 10000;
+var N = 5000;
 var app = angular.module('app', ['fastRepeat']);
 app.config(function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);
@@ -56,61 +56,6 @@ app.controller('main', function ($scope) {
         };
         return $scope;
     }
-});
-app.directive('fastHighlight', function () {
-    return {
-
-
-
-        xlink: function ($scope, $element, $attrs) {
-            var targetNodes = $element[0].querySelectorAll('[fast-highlight-target]');
-            console.log(targetNodes);
-
-            setTimeout(function () {
-                $scope.$watch($attrs.fastHighlight, updateView);
-            }, 0);
-
-            [].forEach.call(targetNodes, function (node) {
-                node.innerHTMLBackup = node.innerHTML;
-            });
-
-            function updateView(search) {
-                if (search) {
-
-                    var nodes = [].map.call($element[0].querySelectorAll('.hl'), function (node) {
-                        return node.parentNode;
-                    });
-                    console.log('.hl number', nodes.length, $element);
-
-                    //[].forEach.call(nodes, function (node) {
-                    //    var rx = /<span class="hl">(.+?)<\/span>/gi;
-                        //var rx = /./gi;
-                        //node.innerHTML = node.innerHTML.replace(rx, function (match) {
-                        //    console.warn(match);
-                        //    return 1;
-                        //});
-                    //});
-
-                    [].forEach.call(targetNodes, function (node) {
-                        console.log(node);
-                        //var rx = new RegExp(search, 'gi');
-                        //node.innerHTML = node.innerHTML.replace(rx, function (match) {
-                        //    return '<span class="hl">' + match + '</span>';
-                        //});
-                    });
-                }
-            }
-
-
-
-        }
-    };
-});
-app.directive('fastHighlightTarget', function () {
-    return {
-        require: '^fastHighlight',
-        restrict: 'A'
-    };
 });
 app.filter('highlight', function ($sce) {
     return function (str, search) {
