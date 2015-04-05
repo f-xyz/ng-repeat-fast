@@ -22,7 +22,7 @@ app.controller('main', function ($scope) {
         $scope.list.push({ value: x });
     };
     $scope.addToEnd = function () {
-        $scope.list.push({ value: 'very end' });
+        $scope.list.push({ value: 'last one' });
     };
     $scope.addToBegin = function () {
         $scope.list.unshift({ value: 'first one' });
@@ -75,13 +75,13 @@ app.directive('fastRepeat', function ($parse, $compile) {
             var match = $attrs.fastRepeat.match(/^\s*(\w+)\sin\s(.+)/);
             if (!match) {
                 throw Error('Expected fastRepeat in form of ' +
-                            '`{item} in {array} [| filter, etc]`' +
+                            '`{item} in {array} [| filter, etc]` ' +
                             'but got `' + $attrs.fastRepeat + '`');
             }
 
             var iteratorName = match[1];
             var expression = match[2];
-            console.log(expression);
+            console.log(iteratorName + ' in ' + expression);
 
             // build DOM
             console.time('creating dom');
@@ -95,7 +95,7 @@ app.directive('fastRepeat', function ($parse, $compile) {
 
             var domFragment = document.createDocumentFragment();
             getModel().forEach(function (item) {
-                item.$$hashKey = uniqueHash();
+                item.$$hashKey = diff.getUniqueKey();
                 var node = createNode(item);
                 itemHashToNodeMap[item.$$hashKey] = node;
                 domFragment.appendChild(node);
@@ -113,13 +113,6 @@ app.directive('fastRepeat', function ($parse, $compile) {
                 return $parse(expression)($scope);
             }
 
-            function uniqueHash() {
-                if (!uniqueHash.value) {
-                    uniqueHash.value = 0;
-                }
-                return uniqueHash.value++;
-            }
-
             function renderChanges(list, prev) {
                 if (list === prev) return;
 
@@ -129,7 +122,7 @@ app.directive('fastRepeat', function ($parse, $compile) {
                 //console.log('prev', prev);
 
                 console.time('diff');
-                var difference = diff(list, prev, true, '$$hashKey');
+                var difference = diff(list, prev, '$$hashKey');
                 console.timeEnd('diff');
                 //console.table(difference);
 
@@ -137,35 +130,44 @@ app.directive('fastRepeat', function ($parse, $compile) {
                 var prevNode; // insert new node after this
                 difference.forEach(function (diffEntry, i) {
                     var item = diffEntry.item;
-                    var node = getNodeFromItem(item);
+                    var node = itemHashToNodeMap[item.$$hashKey];
 
-                    if (diffEntry.state === diff.CREATED) {
-                        if (node) {
-                            showNode(node);
-                        } else {
-                            item.$$hashKey = uniqueHash();
-                            node = createNode(item);
-                            itemHashToNodeMap[item.$$hashKey] = node;
-                            if (prevNode) {
-                                insertAfter(node, prevNode);
+                    switch (diffEntry.state) {
+
+                        case diff.CREATED:
+                            if (node) {
+                                showNode(node);
                             } else {
-                                insertAfter(node, elementNode);
+                                item.$$hashKey = diff.getUniqueKey();
+                                node = createNode(item);
+                                itemHashToNodeMap[item.$$hashKey] = node;
+                                if (prevNode) {
+                                    insertAfter(node, prevNode);
+                                } else {
+                                    insertAfter(node, elementNode);
+                                }
                             }
-                        }
-                    } else if (diffEntry.state === diff.DELETED) {
-                        if (++node.$$generation >= 3) {
-                            hideNode(node);
-                            //deleteNode(node);
-                            //delete newItemHashToNodeMap[i];
-                        } else {
-                            hideNode(node);
-                        }
+                            break;
+
+                        case diff.DELETED:
+                            if (++node.$$generation >= 3) {
+                                hideNode(node);
+                                //deleteNode(node);
+                                //delete itemHashToNodeMap[item.$$hashKey];
+                            } else {
+                                hideNode(node);
+                            }
+                            break;
+
+                        case diff.MOVED:
+                            // todo: process diff.MOVED
+                            break;
                     }
-                    // todo: process diff.MOVED
+
                     prevNode = node;
                 });
-                console.timeEnd('dom');
 
+                console.timeEnd('dom');
                 console.timeEnd('renderChanges');
             }
 
@@ -177,10 +179,6 @@ app.directive('fastRepeat', function ($parse, $compile) {
                 } else {
                     elementParentNode.appendChild(node);
                 }
-            }
-
-            function getNodeFromItem(item) {
-                return itemHashToNodeMap[item.$$hashKey];
             }
 
             function createNode(item) {
@@ -198,20 +196,16 @@ app.directive('fastRepeat', function ($parse, $compile) {
             }
 
             function showNode(node) {
+                //node.className = node.className.slice(0, -8);
                 node.style.display = 'block';
-                //node.style.display = node.style.$$display || 'block';
             }
 
             function hideNode(node) {
-                //node.style.$$display = node.style.display;
+                //node.className += ' ng-hide';
                 node.style.display = 'none';
             }
 
             function deleteNode(node) {
-                console.log('deleteNode');
-                console.log(node);
-                console.log(node.parentNode);
-
                 node.parentNode.removeChild(node);
             }
 
