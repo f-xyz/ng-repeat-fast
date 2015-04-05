@@ -87,6 +87,9 @@ button.active {
 .hl {
   color: #262626;
   background-color: #3d8f74;
+  box-shadow: 0 0 15px 4px #3d8f74;
+  display: inline-block;
+  position: relative;
 }
 .hidden {
   display: none !important;
