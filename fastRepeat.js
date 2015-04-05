@@ -12,7 +12,7 @@ angular
          * @param {{ fastRepeat: string }} $attrs
          */
         link: function ($scope, $element, $attrs) {
-            //console.log('# fast-repeat');
+            console.log('# fast-repeat');
 
             // parse ng-repeat expression
             var match = $attrs.fastRepeat.match(/^\s*(\w+)\sin\s(.+)/);
@@ -24,10 +24,10 @@ angular
 
             var iteratorName = match[1];
             var expression = match[2];
-            //console.log(iteratorName + ' in ' + expression);
+            console.log(iteratorName + ' in ' + expression);
 
             // build DOM
-            //console.time('creating dom');
+            console.time('creating dom');
             var elementNode = $element[0];
             var elementParentNode = elementNode.parentNode;
 
@@ -45,10 +45,12 @@ angular
             });
             insertAfter(domFragment, elementNode);
             hideNode(elementNode);
-            //console.timeEnd('creating dom');
+            console.timeEnd('creating dom');
 
             // watch model for changes
-            $scope.$watchCollection(getModel, delay(renderChanges));
+            if (!/^::/.test(expression)) { // not one-time binding
+                $scope.$watchCollection(getModel, delay(renderChanges));
+            }
 
             ///////////////////////////////////////////////////////////////////
 
@@ -59,17 +61,17 @@ angular
             function renderChanges(list, prev) {
                 if (list === prev) return;
 
-                //console.log('# renderChanges');
-                //console.time('renderChanges');
+                console.log('# renderChanges');
+                console.time('renderChanges');
                 //console.log('list', list);
                 //console.log('prev', prev);
 
-                //console.time('diff');
+                console.time('diff');
                 var difference = diff(list, prev, '$$hashKey');
-                //console.timeEnd('diff');
+                console.timeEnd('diff');
                 //console.table(difference);
 
-                //console.time('dom');
+                console.time('dom');
                 var prevNode; // insert new node after this
                 difference.forEach(function (diffEntry, i) {
                     var item = diffEntry.item;
@@ -110,8 +112,8 @@ angular
                     prevNode = node;
                 });
 
-                //console.timeEnd('dom');
-                //console.timeEnd('renderChanges');
+                console.timeEnd('dom');
+                console.timeEnd('renderChanges');
             }
 
             // DOM operations /////////////////////////////////////////////////

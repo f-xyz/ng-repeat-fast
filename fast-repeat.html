@@ -21,13 +21,13 @@
 
         <input type="search" ng-model="search" autofocus>
 
-        <div class="list" ng-if="!useFastRepeat" fast-highlight="search">
+        <div class="list" ng-if="!useFastRepeat">
             <div class="list-item" ng-repeat="item in list | filter: search track by $index">
                 <span ng-bind-html="item.value | highlight: search"></span>
             </div>
         </div>
 
-        <div class="list" ng-if="useFastRepeat" fast-highlight="search">
+        <div class="list" ng-if="useFastRepeat">
             <div class="list-item" fast-repeat="item in list | filter: search">
                 <span ng-bind-html="item.value | highlight: search"></span>
             </div>
