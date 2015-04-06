@@ -5,7 +5,6 @@ angular
         scope: false,
         restrict: 'A',
         priority: 1000,
-        terminal: true,
         /**
          * @param $scope
          * @param $element
@@ -36,14 +35,17 @@ angular
 
             var itemHashToNodeMap = {};
 
-            var domFragment = document.createDocumentFragment();
-            getModel().forEach(function (item) {
-                item.$$hashKey = diff.getUniqueKey();
-                var node = createNode(item);
-                itemHashToNodeMap[item.$$hashKey] = node;
-                domFragment.appendChild(node);
-            });
-            insertAfter(domFragment, elementNode);
+            var model = getModel()/* || []*/;
+            if (model) {
+                var domFragment = document.createDocumentFragment();
+                model.forEach(function (item) {
+                    item.$$hashKey = diff.getUniqueKey();
+                    var node = createNode(item);
+                    itemHashToNodeMap[item.$$hashKey] = node;
+                    domFragment.appendChild(node);
+                });
+                insertAfter(domFragment, elementNode);
+            }
             hideNode(elementNode);
             console.timeEnd('creating dom');
 
@@ -60,6 +62,10 @@ angular
 
             function renderChanges(list, prev) {
                 if (list === prev) return;
+
+                // ?
+                if (!prev) prev = [];
+                if (!list) list = [];
 
                 console.log('# renderChanges');
                 console.time('renderChanges');
@@ -127,17 +133,17 @@ angular
             }
 
             function createNode(item, apply) {
-                var clone = $template.clone();
+                var $clone = $template.clone();
                 var itemScope = $scope.$new();
                 itemScope[iteratorName] = item;
 
-                $compile(clone)(itemScope);
+                $compile($clone)(itemScope);
 
                 if (apply) {
                     itemScope.$digest();
                 }
 
-                var node = clone[0];
+                var node = $clone[0];
                 node.$$generation = 0;
                 node.$$visible = true;
 
