@@ -42,6 +42,10 @@
     <script src="fastRepeat.js"></script>
 
     <script type="text/ng-template" id="item-template">
+        <span ng-include="'item-template-inner'"></span>
+    </script>
+
+    <script type="text/ng-template" id="item-template-inner">
         <span ng-bind-html="item.value | highlight: search"></span>
     </script>
 

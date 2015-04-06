@@ -1,4 +1,3 @@
-var N = 5;//000;
 var app = angular.module('app', ['fastRepeat']);
 app.config(function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);
@@ -7,6 +6,7 @@ app.run(function () {
    document.querySelector('.container').className += ' on';
 });
 app.controller('main', function ($scope) {
+    var N = 5;//000;
     $scope.useFastRepeat = true;
     $scope.list = [];
     $scope.search = '';

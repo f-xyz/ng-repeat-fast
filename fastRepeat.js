@@ -2,10 +2,10 @@ angular
 .module('fastRepeat', [])
 .directive('fastRepeat', function ($parse, $compile) {
     return {
-        scope: false,
+        scope: true,
         restrict: 'A',
         priority: 1000,
-        terminal: false,
+        terminal: true,
         /**
          * @param $scope
          * @param $element
@@ -17,10 +17,12 @@ angular
             // parse ng-repeat expression
             var match = $attrs.fastRepeat.match(/^\s*(\w+)\sin\s(.+)/);
             if (!match) {
-                throw Error('Expected fastRepeat in form of ' +
+                throw Error('fastRepeat: expected fastRepeat in form of ' +
                             '`{item} in {array} [| filter, etc]` ' +
                             'but got `' + $attrs.fastRepeat + '`');
             }
+
+            // todo - make possibility to run completely in read-only mode (:: etc)
 
             var iteratorName = match[1];
             var expression = match[2];
@@ -30,29 +32,34 @@ angular
             console.time('creating dom');
             var elementNode = $element[0];
             var elementParentNode = elementNode.parentNode;
+            console.log('element', elementNode);
 
             var $template = $element.clone();
             $template.removeAttr('fast-repeat');
+            console.log($template[0].outerHTML.trim());
 
             var itemHashToNodeMap = {};
 
-            var model = getModel()/* || []*/; // todo
-            if (model) {
-                var domFragment = document.createDocumentFragment();
-                model.forEach(function (item) {
-                    item.$$hashKey = diff.getUniqueKey();
-                    var node = createNode(item);
-                    itemHashToNodeMap[item.$$hashKey] = node;
-                    domFragment.appendChild(node);
-                });
-                insertAfter(domFragment, elementNode);
+            var model = getModel();
+            if (!Array.isArray(model)) {
+                throw Error('fastRepeat: expected `' + $attrs.fastRepeat + '` ' +
+                            'to be an array but got: ' + String(model));
             }
+
+            var domFragment = document.createDocumentFragment();
+            model.forEach(function (item, i) {
+                item.$$hashKey = diff.getUniqueKey();
+                var node = createNodeWithScope(item, i, model.length).node;
+                itemHashToNodeMap[item.$$hashKey] = node;
+                domFragment.appendChild(node);
+            });
+            insertAfter(domFragment, elementNode);
             hideNode(elementNode);
             console.timeEnd('creating dom');
 
             // watch model for changes
             if (!/^::/.test(expression)) { // not one-time binding
-                $scope.$watchCollection(getModel, delay(renderChanges));
+                $scope.$watchCollection(getModel, delayed(renderChanges));
             }
 
             ///////////////////////////////////////////////////////////////////
@@ -63,10 +70,6 @@ angular
 
             function renderChanges(list, prev) {
                 if (list === prev) return;
-
-                // todo ?
-                if (!prev) prev = [];
-                if (!list) list = [];
 
                 console.log('# renderChanges');
                 console.time('renderChanges');
@@ -80,7 +83,7 @@ angular
 
                 console.time('dom');
                 var prevNode; // insert new node after this
-                difference.forEach(function (diffEntry, i) {
+                difference.forEach(function (diffEntry) {
                     var item = diffEntry.item;
                     var node = itemHashToNodeMap[item.$$hashKey];
 
@@ -91,13 +94,15 @@ angular
                                 showNode(node);
                             } else {
                                 item.$$hashKey = diff.getUniqueKey();
-                                node = createNode(item, true);
-                                itemHashToNodeMap[item.$$hashKey] = node;
+                                var nodeWithScope = createNodeWithScope(item, true);
+                                node = nodeWithScope.node;
                                 if (prevNode) {
                                     insertAfter(node, prevNode);
                                 } else {
                                     insertAfter(node, elementNode);
                                 }
+                                nodeWithScope.scope.$digest();
+                                itemHashToNodeMap[item.$$hashKey] = node;
                             }
                             break;
 
@@ -127,35 +132,44 @@ angular
 
             function insertAfter(node, afterNode) {
                 if (afterNode.nextSibling) {
+                    if (afterNode.nodeType == 8) {
+                        afterNode = afterNode.nextSibling;
+                    }
                     elementParentNode.insertBefore(node, afterNode.nextSibling);
                 } else {
                     elementParentNode.appendChild(node);
                 }
             }
 
-            function createNode(item, apply) {
-                var $clone = $template.clone();
+            function createNodeWithScope(item, i, total) {
                 var itemScope = $scope.$new();
                 itemScope[iteratorName] = item;
+                itemScope.$index = i;
+                itemScope.$first = i == 0;
+                itemScope.$last = i == total - 1;
+                itemScope.$even = i % 2 == 0;
+                itemScope.$odd = !itemScope.$even;
 
+                var $clone = $template.clone();
                 $compile($clone)(itemScope);
-
-                if (apply) {
-                    itemScope.$digest();
-                }
 
                 var node = $clone[0];
                 node.$$generation = 0;
-                node.$$visible = true;
 
-                return node;
+                return { node: node, scope: itemScope };
             }
 
             function showNode(node) {
+                if (node.nodeType == 8) {
+                    node = node.nextSibling;
+                }
                 node.className = node.className.slice(0, -8);
             }
 
             function hideNode(node) {
+                if (node.nodeType == 8) {
+                    node = node.nextSibling;
+                }
                 node.className += ' ng-hide';
             }
 
@@ -165,7 +179,7 @@ angular
 
             ///////////////////////////////////////////////////////////////////
 
-            function delay(f) {
+            function delayed(f) {
                 // unused arguments are for angular
                 return function (a, b) {
                     var args = arguments;
