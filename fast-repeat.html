@@ -22,14 +22,16 @@
         <input type="search" ng-model="search" autofocus>
 
         <div class="list" ng-if="!useFastRepeat">
-            <div class="list-item" ng-repeat="item in list | filter: search track by $index">
-                <span ng-bind-html="item.value | highlight: search"></span>
+            <div class="list-item"
+                 ng-repeat="item in list | filter: search track by $index"
+                 ng-include="'item-template'">
             </div>
         </div>
 
         <div class="list" ng-if="useFastRepeat">
-            <div class="list-item" fast-repeat="item in list | filter: search">
-                <span ng-bind-html="item.value | highlight: search"></span>
+            <div class="list-item"
+                 fast-repeat="item in list | filter: search"
+                 ng-include="'item-template'">
             </div>
         </div>
     </div>
@@ -38,5 +40,10 @@
     <script src="list-diff/index.js"></script>
     <script src="main.js"></script>
     <script src="fastRepeat.js"></script>
+
+    <script type="text/ng-template" id="item-template">
+        <span ng-bind-html="item.value | highlight: search"></span>
+    </script>
+
 </body>
 </html>

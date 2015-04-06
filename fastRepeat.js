@@ -4,8 +4,8 @@ angular
     return {
         scope: false,
         restrict: 'A',
-        priority: 1000,
-        terminal: true,
+        priority: 0,
+        //terminal: true,
         /**
          * @param $scope
          * @param $element

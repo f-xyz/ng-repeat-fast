@@ -1,4 +1,4 @@
-var N = 5000;
+var N = 5;//000;
 var app = angular.module('app', ['fastRepeat']);
 app.config(function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);
