@@ -6,7 +6,7 @@ app.run(function () {
    document.querySelector('.container').className += ' on';
 });
 app.controller('main', function ($scope) {
-    var N = 5;//000;
+    var N = 1000;
     $scope.useFastRepeat = true;
     $scope.list = [];
     $scope.search = '';

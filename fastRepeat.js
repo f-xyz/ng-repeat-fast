@@ -14,6 +14,9 @@ angular
         link: function ($scope, $element, $attrs) {
             console.log('# fast-repeat');
 
+            // todo - animation support
+            // todo - make possibility to run completely in read-only mode (:: etc)
+
             // parse ng-repeat expression
             var match = $attrs.fastRepeat.match(/^\s*(\w+)\sin\s(.+)/);
             if (!match) {
@@ -22,13 +25,10 @@ angular
                             'but got `' + $attrs.fastRepeat + '`');
             }
 
-            // todo - make possibility to run completely in read-only mode (:: etc)
-
             var iteratorName = match[1];
             var expression = match[2];
             console.log(iteratorName + ' in ' + expression);
 
-            // build DOM
             console.time('creating dom');
             var elementNode = $element[0];
             var elementParentNode = elementNode.parentNode;
@@ -46,6 +46,7 @@ angular
                             'to be an array but got: ' + String(model));
             }
 
+            // build DOM
             var domFragment = document.createDocumentFragment();
             model.forEach(function (item, i) {
                 item.$$hashKey = diff.getUniqueKey();
@@ -57,8 +58,9 @@ angular
             hideNode(elementNode);
             console.timeEnd('creating dom');
 
-            // watch model for changes
-            if (!/^::/.test(expression)) { // not one-time binding
+            // watch model for changes if
+            // it is not one-time binding
+            if (!/^::/.test(expression)) {
                 $scope.$watchCollection(getModel, delayed(renderChanges));
             }
 
@@ -82,7 +84,7 @@ angular
                 //console.table(difference);
 
                 console.time('dom');
-                var prevNode; // insert new node after this
+                var prevNode; // insert new node after me
                 difference.forEach(function (diffEntry) {
                     var item = diffEntry.item;
                     var node = itemHashToNodeMap[item.$$hashKey];
@@ -109,6 +111,7 @@ angular
                         case diff.DELETED:
                             if (++node.$$generation >= 3) {
                                 hideNode(node);
+                                // todo: cleaning up mature nodes
                                 //deleteNode(node);
                                 //delete itemHashToNodeMap[item.$$hashKey];
                             } else {
@@ -118,6 +121,9 @@ angular
 
                         case diff.MOVED:
                             // todo: process diff.MOVED
+                            // todo: make reference to an item ...
+                            //       todo: after which to insert the node
+                            //       todo: (in list-diff)
                             break;
                     }
 
@@ -180,7 +186,8 @@ angular
             ///////////////////////////////////////////////////////////////////
 
             function delayed(f) {
-                // unused arguments are for angular
+                // unused arguments are for
+                // angular DI signature parser
                 return function (a, b) {
                     var args = arguments;
                     setTimeout(function () {

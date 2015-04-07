@@ -23,7 +23,7 @@
 
         <div class="list" ng-if="!useFastRepeat">
             <div class="list-item"
-                 ng-repeat="item in list | filter: search track by $index"
+                 ng-repeat="item in list | filter: search"
                  ng-include="'item-template'">
             </div>
         </div>
@@ -46,7 +46,8 @@
     </script>
 
     <script type="text/ng-template" id="item-template-inner">
-        <span ng-bind-html="item.value | highlight: search"></span>
+        <!--<span ng-bind-html="item.value | highlight: search"></span>-->
+        {{ ::item.value }}
     </script>
 
 </body>
