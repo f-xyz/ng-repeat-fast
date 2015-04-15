@@ -10,14 +10,32 @@
 
     <div class="container clearfix">
 
-        <div class="buttons">
+        <section>
+            <h1>
+                <span class="char-{{ $index }}"
+                      ng-repeat="char in 'fast-repeat' track by $index">
+                    {{ char }}
+                </span>
+            </h1>
+        </section>
+
+        <br>
+
+        <section>
+            <button ng-click="swap()">Swap first and last</button>
+        </section>
+
+        <section>
             <button ng-click="toggleFastRepeat()"
+                    style="min-width: 140px;"
                     ng-class="{ 'active': useFastRepeat }"
-                    title="Use fast-repeat instead of ng-repeat?">fastRepeat</button>
+                    title="Use fast-repeat instead of ng-repeat?">
+                {{ useFastRepeat ? 'fastRepeat' : 'ngRepeat' }}
+            </button>
             <button ng-click="addToBegin()">Add first</button>
             <button ng-click="add2nd()">Add 2nd</button>
             <button ng-click="addToEnd()">Add last</button>
-        </div>
+        </section>
 
         <input type="search" ng-model="search" autofocus>
 
@@ -46,7 +64,6 @@
     </script>
 
     <script type="text/ng-template" id="item-template-inner">
-        <!--<span ng-bind-html="item.value | highlight: search"></span>-->
         {{ ::item.value }}
     </script>
 

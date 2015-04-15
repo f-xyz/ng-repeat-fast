@@ -6,10 +6,12 @@ app.run(function () {
    document.querySelector('.container').className += ' on';
 });
 app.controller('main', function ($scope) {
-    var N = 1000;
+    var N = 3;
     $scope.useFastRepeat = true;
     $scope.list = [];
     $scope.search = '';
+
+    // getters
     $scope.filter = function (list, what) {
         return list.filter(function (x) {
             return x.value.indexOf(what) != -1;
@@ -20,6 +22,11 @@ app.controller('main', function ($scope) {
         while (x.length < 20)
             x += i;
         $scope.list.push({ value: x });
+    };
+
+    // actions
+    $scope.toggleFastRepeat = function () {
+        $scope.useFastRepeat = !$scope.useFastRepeat;
     };
     $scope.addToEnd = function () {
         $scope.list.push({ value: 'last one' });
@@ -33,8 +40,10 @@ app.controller('main', function ($scope) {
         var tail = $scope.list.slice(1);
         $scope.list = head.concat([item], tail);
     };
-    $scope.toggleFastRepeat = function () {
-        $scope.useFastRepeat = !$scope.useFastRepeat;
+    $scope.swap = function () {
+        var tmp = $scope.list[0];
+        $scope.list[0] = $scope.list[1];
+        $scope.list[1] = tmp;
     };
 
     for (var i = 0; i < N; ++i) {

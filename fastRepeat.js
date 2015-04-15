@@ -15,7 +15,9 @@ angular
             console.log('# fast-repeat');
 
             // todo - animation support
-            // todo - make possibility to run completely in read-only mode (:: etc)
+            // todo - garbage collection for DOM nodes
+
+            var MAX_GENERATIONS = 8;
 
             // parse ng-repeat expression
             var match = $attrs.fastRepeat.match(/^\s*(\w+)\sin\s(.+)/);
@@ -81,7 +83,7 @@ angular
                 console.time('diff');
                 var difference = diff(list, prev, '$$hashKey');
                 console.timeEnd('diff');
-                //console.table(difference);
+                console.table(difference);
 
                 console.time('dom');
                 var prevNode; // insert new node after me
@@ -109,11 +111,10 @@ angular
                             break;
 
                         case diff.DELETED:
-                            if (++node.$$generation >= 3) {
-                                hideNode(node);
-                                // todo: cleaning up mature nodes
-                                //deleteNode(node);
-                                //delete itemHashToNodeMap[item.$$hashKey];
+                            // todo: make $$generation local variable
+                            if (++node.$$generation > MAX_GENERATIONS) {
+                                deleteNode(node);
+                                delete itemHashToNodeMap[item.$$hashKey];
                             } else {
                                 hideNode(node);
                             }
@@ -124,6 +125,10 @@ angular
                             // todo: make reference to an item ...
                             //       todo: after which to insert the node
                             //       todo: (in list-diff)
+                            console.log('# MOVED', item);
+                            var swapWithNode = elementParentNode
+                                .querySelector(':nth-child(' + 0 + ')');
+                            console.log(swapWithNode);
                             break;
                     }
 
