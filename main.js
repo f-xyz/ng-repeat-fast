@@ -6,7 +6,7 @@ app.run(function () {
    document.querySelector('.container').className += ' on';
 });
 app.controller('main', function ($scope) {
-    var N = 3;
+    var N = 30;
     $scope.useFastRepeat = true;
     $scope.list = [];
     $scope.search = '';
@@ -17,6 +17,7 @@ app.controller('main', function ($scope) {
             return x.value.indexOf(what) != -1;
         });
     };
+
     $scope.add = function (i) {
         var x = '';
         while (x.length < 20)

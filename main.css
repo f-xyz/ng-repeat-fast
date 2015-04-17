@@ -1,3 +1,9 @@
+.ng-hide:not(.ng-hide-animate) {
+  display: block !important;
+  opacity: 0;
+  transform: translateX(-500px);
+  transition: 1s;
+}
 body {
   margin: 20px;
   background-color: #262626;
@@ -38,7 +44,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #70c2a7;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #70c2a7;
 }
 .on .char-16 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -49,7 +55,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #70c28b;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #70c28b;
 }
 .on .char-15 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -60,7 +66,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #70c270;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #70c270;
 }
 .on .char-14 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -71,7 +77,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #8bc270;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #8bc270;
 }
 .on .char-13 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -82,7 +88,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #a7c270;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #a7c270;
 }
 .on .char-12 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -93,7 +99,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #c2c270;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #c2c270;
 }
 .on .char-11 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -104,7 +110,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #c2a770;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #c2a770;
 }
 .on .char-10 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -115,7 +121,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #c28b70;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #c28b70;
 }
 .on .char-9 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -126,7 +132,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #c27070;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #c27070;
 }
 .on .char-8 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -137,7 +143,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #c2708b;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #c2708b;
 }
 .on .char-7 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -148,7 +154,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #c270a7;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #c270a7;
 }
 .on .char-6 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -159,7 +165,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #c270c2;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #c270c2;
 }
 .on .char-5 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -170,7 +176,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #a770c2;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #a770c2;
 }
 .on .char-4 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -181,7 +187,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #8b70c2;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #8b70c2;
 }
 .on .char-3 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -192,7 +198,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #7070c2;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #7070c2;
 }
 .on .char-2 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -203,7 +209,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #708bc2;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #708bc2;
 }
 .on .char-1 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -214,7 +220,7 @@ section > * {
   margin-left: 16px;
   transition: 1s;
   color: #70a7c2;
-  text-shadow: 0 0 10px #70a7c2;
+  text-shadow: 0 0 2px 10px #70a7c2;
 }
 .on .char-0 {
   -webkit-animation: opacity 1s ease-in-out;
@@ -294,6 +300,9 @@ input[type=search]:focus,
   transform-style: preserve-3d;
   backface-visibility: visible;
 }
+.list .list-item {
+  transition: .1s;
+}
 .hl {
   color: #262626;
   background-color: #70a7c2;
@@ -303,50 +312,50 @@ input[type=search]:focus,
 }
 @keyframes slide-from-bottom {
   0% {
-    top: 2000px;
+    transform: translateY(2000px);
   }
   100% {
-    top: 0;
+    transform: translateY(0);
   }
 }
 @-webkit-keyframes slide-from-bottom {
   0% {
-    top: 2000px;
+    transform: translateY(2000px);
   }
   100% {
-    top: 0;
+    transform: translateY(0);
   }
 }
 @-moz-keyframes slide-from-bottom {
   0% {
-    top: 2000px;
+    transform: translateY(2000px);
   }
   100% {
-    top: 0;
+    transform: translateY(0);
   }
 }
 @keyframes slide-from-top {
   0% {
-    top: -500px;
+    transform: translateY(-500px);
   }
   100% {
-    top: 0;
+    transform: translateY(0);
   }
 }
 @-webkit-keyframes slide-from-top {
   0% {
-    top: -500px;
+    transform: translateY(-500px);
   }
   100% {
-    top: 0;
+    transform: translateY(0);
   }
 }
 @-moz-keyframes slide-from-top {
   0% {
-    top: -500px;
+    transform: translateY(-500px);
   }
   100% {
-    top: 0;
+    transform: translateY(0);
   }
 }
 @keyframes opacity {

@@ -10,7 +10,7 @@
 
     <div class="container clearfix">
 
-        <section>
+        <!--<section>
             <h1>
                 <span class="char-{{ $index }}"
                       ng-repeat="char in 'fast-repeat' track by $index">
@@ -19,11 +19,7 @@
             </h1>
         </section>
 
-        <br>
-
-        <section>
-            <button ng-click="swap()">Swap first and last</button>
-        </section>
+        <br>-->
 
         <section>
             <button ng-click="toggleFastRepeat()"
@@ -37,7 +33,14 @@
             <button ng-click="addToEnd()">Add last</button>
         </section>
 
-        <input type="search" ng-model="search" autofocus>
+        <div class="row">
+            <div class="col-xs-7">
+                <input type="search" ng-model="search" autofocus>
+            </div>
+            <div class="col-xs-5 text-right">
+                <button ng-click="swap()">Swap first and last</button>
+            </div>
+        </div>
 
         <div class="list" ng-if="!useFastRepeat">
             <div class="list-item"

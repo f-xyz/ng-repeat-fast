@@ -7,11 +7,18 @@
 @color-text: hsl(200, 40%, 60%);
 @spin: 50%;
 
+.ng-hide:not(.ng-hide-animate) {
+  display: block !important;
+  opacity: 0;
+  transform: translateX(-500px);
+  transition: 1s;
+}
+
 .shadow-mixin (@color) {
   box-shadow: 0 0 10px @color;
 }
 .text-shadow-mixin (@color) {
-  text-shadow: 0 0 10px @color;
+  text-shadow: 0 0 2px 10px @color;
 }
 .animation2(@animation, @animation2) {
   -webkit-animation: @animation, @animation2;
@@ -57,13 +64,13 @@ section {
   //  transform: translateX;
 }
 
-// trying recursion...
 .generate-char(@i) when (@i >= 0) {
+  @char-color: spin(@color-text, @i * 20%);
   .char-@{i} {
     margin-left: 16px;
     transition: 1s;
-    color: spin(@color-text, @i * 20%);
-    .text-shadow-mixin(@color-text);
+    color: @char-color;
+    .text-shadow-mixin(@char-color);
   }
   .on .char-@{i} {
     .animation(opacity 1s ease-in-out);
@@ -138,6 +145,10 @@ input[type=search] {
   transition: 1s;
   transform-style: preserve-3d;
   backface-visibility: visible;
+
+  .list-item {
+    transition: .1s;
+  }
 }
 
 .hl {
@@ -151,31 +162,31 @@ input[type=search] {
 
 
 @keyframes slide-from-bottom {
-  0% { top: 2000px; }
-  100% { top: 0; }
+  0% { transform: translateY(2000px); }
+  100% { transform: translateY(0); }
 }
 @-webkit-keyframes slide-from-bottom {
-  0% { top: 2000px; }
-  100% { top: 0; }
+  0% { transform: translateY(2000px); }
+  100% { transform: translateY(0); }
 }
 @-moz-keyframes slide-from-bottom {
-  0% { top: 2000px; }
-  100% { top: 0; }
+  0% { transform: translateY(2000px); }
+  100% { transform: translateY(0); }
 }
 
 
 
 @keyframes slide-from-top {
-  0% { top: -500px; }
-  100% { top: 0; }
+  0% { transform: translateY(-500px); }
+  100% { transform: translateY(0); }
 }
 @-webkit-keyframes slide-from-top {
-  0% { top: -500px; }
-  100% { top: 0; }
+  0% { transform: translateY(-500px); }
+  100% { transform: translateY(0); }
 }
 @-moz-keyframes slide-from-top {
-  0% { top: -500px; }
-  100% { top: 0; }
+  0% { transform: translateY(-500px); }
+  100% { transform: translateY(0); }
 }
 
 
