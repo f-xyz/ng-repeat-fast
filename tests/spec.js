@@ -11,11 +11,6 @@
             '{{ ::item.value }}' +
         '</div>';
 
-    var templateNgInclude =
-        '<div fast-repeat="item in list" ng-include="\'item.html\'">' +
-           '{{ ::item.value }}' +
-        '</div>';
-
     /**
      * @param {function} f
      */
@@ -49,15 +44,15 @@
         }
     }
 
-    describe('# basic DOM operations', function () {
-
-        beforeEach(function () {
-            module('app');
-            inject(function ($injector) {
-                $compile = $injector.get('$compile', '');
-                $rootScope = $injector.get('$rootScope', '');
-            });
+    beforeEach(function () {
+        module('app');
+        inject(function ($injector) {
+            $compile = $injector.get('$compile', '');
+            $rootScope = $injector.get('$rootScope', '');
         });
+    });
+
+    describe('# basic DOM operations', function () {
 
         it('should render list', function () {
             // arrange, act
@@ -175,6 +170,9 @@
             items.eq(0).text().should.eq('1');
             items.eq(1).text().should.eq('0');
         });
+    });
+
+    describe('# complex DOM operations', function () {
 
         it('should reuse hidden node if item has been added again', function () {
             // arrange
@@ -184,6 +182,7 @@
             var container = createElement();
             $rootScope.$digest();
 
+            // act
             $rootScope.list = [];
             $rootScope.$digest();
 
@@ -195,17 +194,10 @@
             items.length.should.eq(1);
             items.eq(0).text().should.eq('0');
         });
+
     });
 
     describe('# initialization', function () {
-
-        beforeEach(function () {
-            module('app');
-            inject(function ($injector) {
-                $compile = $injector.get('$compile', '');
-                $rootScope = $injector.get('$rootScope', '');
-            });
-        });
 
         it('should parse expression', function () {
             $rootScope.list = [];

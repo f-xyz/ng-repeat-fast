@@ -1,8 +1,9 @@
 (function () {
     'use strict';
 
+    // todo: make bower package
     /* istanbul ignore next */
-    var console = (function (enabled) {
+    var console = (function createConsole(enabled) {
 
         var nativeConsole = window.console;
 
@@ -142,7 +143,7 @@
 
             console.time('dom');
             var prevNode; // insert new node after me
-            difference.forEach(function (diffEntry) {
+            difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
                 var node = itemHashToNodeMap[item.$$hashKey];
 
@@ -151,7 +152,10 @@
                     case diff.CREATED:
                         if (node) {
                             // todo: check indexes here
-                            console.log('NODE EXISTS');
+                            var nodeList = elementParentNode.childNodes;
+                            nodeList = [].slice.call(nodeList);
+                            var index = nodeList.indexOf(node);
+                            console.log('NODE EXISTS', node, index, i);
                             showNode(node);
                         } else {
                             item.$$hashKey = diff.getUniqueKey();
