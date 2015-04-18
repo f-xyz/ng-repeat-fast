@@ -1,4 +1,5 @@
 # ng-repeat-fast
+[![Build Status](https://travis-ci.org/fantasticMrFox/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/fantasticMrFox/ng-repeat-fast)
 
 crear: 226ms
 back: 100ms
