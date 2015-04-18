@@ -1,6 +1,32 @@
 (function () {
     'use strict';
 
+    /* istanbul ignore next */
+    var console = (function (enabled) {
+
+        var nativeConsole = window.console;
+
+        function apply(fn) {
+            return function () {
+                if (enabled) {
+                    fn.apply(nativeConsole, arguments);
+                }
+            }
+        }
+
+        return {
+            log: apply(nativeConsole.log),
+            time: apply(nativeConsole.time),
+            timeEnd: apply(nativeConsole.timeEnd),
+            table: apply(nativeConsole.table),
+            get enabled() { return enabled },
+            set enabled(value) { enabled = value }
+        };
+
+    })(true);
+
+    ///////////////////////////////////////////////////////////////////////////
+
     angular
     .module('fastRepeat', [])
     .directive('fastRepeat', function ($parse, $compile) {
@@ -19,6 +45,7 @@
      * @param {function} f
      * @returns {function}
      */
+    /*
     function delayed(f) {
         // unused arguments are for
         // angular DI signature parser
@@ -29,6 +56,7 @@
             }, 0);
         }
     }
+    */
 
     /**
      * @param $scope
@@ -43,13 +71,14 @@
         // todo - animation support
         // todo - track by
         // todo - garbage collection for DOM nodes (?)
+        //        timer-based?
 
         // parse ng-repeat expression
         var match = $attrs.fastRepeat.match(/^\s*(\w+)\sin\s(.+)/);
         if (!match) {
             throw Error('fastRepeat: expected fastRepeat in form of ' +
-            '`{item} in {array} [| filter, etc]` ' +
-            'but got `' + $attrs.fastRepeat + '`');
+                        '`{item} in {array} [| filter, etc]` ' +
+                        'but got `' + $attrs.fastRepeat + '`');
         }
 
         var iteratorName = match[1];
@@ -70,7 +99,7 @@
         var model = getModel();
         if (!Array.isArray(model)) {
             throw Error('fastRepeat: expected `' + $attrs.fastRepeat + '` ' +
-            'to be an array but got: ' + String(model));
+                        'to be an array but got: ' + String(model));
         }
 
         // build DOM
@@ -88,7 +117,8 @@
         // watch model for changes if
         // it is not one-time binding
         if (!/^::/.test(expression)) {
-            $scope.$watchCollection(getModel, delayed(renderChanges));
+            // todo: consider delayed(renderChanges)
+            $scope.$watchCollection(getModel, renderChanges);
         }
 
         ///////////////////////////////////////////////////////////////////
@@ -102,8 +132,8 @@
 
             console.log('# renderChanges');
             console.time('renderChanges');
-            //console.log('list', list);
-            //console.log('prev', prev);
+            //log('list', list);
+            //log('prev', prev);
 
             console.time('diff');
             var difference = diff(list, prev, '$$hashKey');
@@ -111,7 +141,6 @@
             console.log('difference', difference);
 
             console.time('dom');
-            // todo: extract function
             var prevNode; // insert new node after me
             difference.forEach(function (diffEntry) {
                 var item = diffEntry.item;
@@ -121,6 +150,8 @@
 
                     case diff.CREATED:
                         if (node) {
+                            // todo: check indexes here
+                            console.log('NODE EXISTS');
                             showNode(node);
                         } else {
                             item.$$hashKey = diff.getUniqueKey();
@@ -131,7 +162,7 @@
                             } else {
                                 insertAfter(node, elementNode);
                             }
-                            nodeWithScope.scope.$digest();
+                            //nodeWithScope.scope.$digest(); // todo: really needed?
                             itemHashToNodeMap[item.$$hashKey] = node;
                         }
                         break;
@@ -216,19 +247,20 @@
             node.className += ' ng-hide';
         }
 
-        function deleteNode(node) {
-            if (node.nodeType == 8) {
-                node.parentNode.removeChild(node.nextSibling);
-            }
-            node.parentNode.removeChild(node);
-        }
+        //function deleteNode(node) {
+        //    if (node.nodeType == 8) {
+        //        node.parentNode.removeChild(node.nextSibling);
+        //    }
+        //    node.parentNode.removeChild(node);
+        //}
 
         ///////////////////////////////////////////////////////////////////////////
 
-        $scope.$on('$destroy', function () {
-            console.log('destroy');
-            console.log($element);
-        });
+        // todo: ?
+        //$scope.$on('$destroy', function () {
+        //    console.log('destroy');
+        //    console.log($element);
+        //});
     }
 
 })();

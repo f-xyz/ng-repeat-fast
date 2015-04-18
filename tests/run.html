@@ -13,19 +13,21 @@
         #mocha .test pre { border-color: transparent; box-shadow: 0 0 5px #00b3ee; }
     </style>
 </head>
-<body ng-app="app">
+<body>
 
     <div id="mocha"></div>
+    <div id="app" ng-app="app"></div>
 
     <script src="../bower_components/jquery/dist/jquery.js"></script>
     <script src="../bower_components/chai/chai.js"></script>
+    <script src="../bower_components/chai-jquery/chai-jquery.js"></script>
     <script src="../bower_components/mocha/mocha.js"></script>
     <script>
         mocha.setup('bdd');
     </script>
+
     <script src="../bower_components/angular/angular.js"></script>
     <script src="../bower_components/angular-mocks/angular-mocks.js"></script>
-
     <script src="../list-diff/index.js"></script>
     <script src="../fastRepeat.js"></script>
 

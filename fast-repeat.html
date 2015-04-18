@@ -28,7 +28,7 @@
                     title="Use fast-repeat instead of ng-repeat?">
                 {{ useFastRepeat ? 'fastRepeat' : 'ngRepeat' }}
             </button>
-            <button ng-click="addToBegin()">Add first</button>
+            <button ng-click="addToBegin()">Add 1st</button>
             <button ng-click="add2nd()">Add 2nd</button>
             <button ng-click="addToEnd()">Add last</button>
         </section>
@@ -38,7 +38,7 @@
                 <input type="search" ng-model="search" autofocus>
             </div>
             <div class="col-xs-5 text-right">
-                <button ng-click="swap()">Swap first and last</button>
+                <button ng-click="swap()">Swap 1st and 2nd</button>
             </div>
         </div>
 
@@ -51,8 +51,9 @@
 
         <div class="list" ng-if="useFastRepeat">
             <div class="list-item"
-                 fast-repeat="item in list | filter: search"
-                 ng-include="'item-template'">
+                 fast-repeat="item in list | filter: search">
+                 <!--ng-include="'item-template'">-->
+                <span ng-bind-html="item.value | highlight: search"></span>
             </div>
         </div>
     </div>
@@ -67,8 +68,8 @@
     </script>
 
     <script type="text/ng-template" id="item-template-inner">
-        {{ ::item.value }}
+        <!--{{ ::item.value }}-->
+        <span ng-bind-html="item.value | highlight: search"></span>
     </script>
-
 </body>
 </html>

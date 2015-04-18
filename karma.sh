@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-karma start
+karma start --auto-watch
