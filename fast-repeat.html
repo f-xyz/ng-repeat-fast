@@ -49,12 +49,13 @@
             </div>
         </div>
 
+        <!--ng-include="'item-template'">-->
         <div class="list" ng-if="useFastRepeat">
+            <div class="placeholder"></div>
             <div class="list-item"
-                 fast-repeat="item in list | filter: search">
-                 <!--ng-include="'item-template'">-->
-                <span ng-bind-html="item.value | highlight: search"></span>
-            </div>
+                 fast-repeat="item in list | filter: search"
+                >{{ ::item.value }} </div>
+            <div class="placeholder"></div>
         </div>
     </div>
 
@@ -68,8 +69,8 @@
     </script>
 
     <script type="text/ng-template" id="item-template-inner">
-        <!--{{ ::item.value }}-->
-        <span ng-bind-html="item.value | highlight: search"></span>
+        {{ ::item.value }}
+        <!--<span ng-bind-html="item.value | highlight: search"></span>-->
     </script>
 </body>
 </html>

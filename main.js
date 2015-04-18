@@ -11,6 +11,15 @@ app.controller('main', function ($scope) {
     $scope.list = [];
     $scope.search = '';
 
+    setTimeout(function () {
+        //$scope.search = 'x';
+        //$scope.$digest();
+        //$scope.swap();
+        //$scope.$digest();
+        //$scope.search = '';
+        //$scope.$digest();
+    }, 1);
+
     // getters
     $scope.filter = function (list, what) {
         return list.filter(function (x) {

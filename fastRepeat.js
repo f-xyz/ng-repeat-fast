@@ -2,6 +2,9 @@
     'use strict';
 
     // todo: make bower package
+
+    var indexOf = [].indexOf;
+
     /* istanbul ignore next */
     var console = (function createConsole(enabled) {
 
@@ -67,14 +70,18 @@
      * @param {{ fastRepeat: string }} $attrs
      */
     function fastRepeatLink($scope, $element, $attrs, $parse, $compile) {
-        console.log('# fast-repeat');
-
+        // todo - fix exception after
+        //          1. Input 'x' to filter out all items
+        //          2. Press Add 1st
+        //          3. Press Add 2st
+        //          4. Clear filter -> thrown
         // todo - animation support
         // todo - track by
         // todo - garbage collection for DOM nodes (?)
         //        timer-based?
 
-        // parse ng-repeat expression
+        // parse ng-repeat expression /////////////////////////////////////////
+
         var match = $attrs.fastRepeat.match(/^\s*(\w+)\sin\s(.+)/);
         if (!match) {
             throw Error('fastRepeat: expected fastRepeat in form of ' +
@@ -86,39 +93,44 @@
         var expression = match[2];
         console.log(iteratorName + ' in ' + expression);
 
-        console.time('creating dom');
-        var elementNode = $element[0];
-        var elementParentNode = elementNode.parentNode;
-        console.log('element', elementNode);
-
-        var $template = $element.clone();
-        $template.removeAttr('fast-repeat');
-        console.log($template[0].outerHTML.trim());
-
-        var itemHashToNodeMap = {};
-
         var model = getModel();
         if (!Array.isArray(model)) {
             throw Error('fastRepeat: expected `' + $attrs.fastRepeat + '` ' +
                         'to be an array but got: ' + String(model));
         }
 
-        // build DOM
-        var domFragment = document.createDocumentFragment();
+        // build DOM //////////////////////////////////////////////////////////
+
+        var itemHashToNodeMap = {};
+
+        console.time('creating dom');
+        var elementNode = $element[0];
+        var parentNode = elementNode.parentNode;
+        //console.log('element', elementNode);
+
+        var elementNodeIndex = getNodeIndex(elementNode);
+
+        var $template = $element.clone();
+        $template.removeAttr('fast-repeat');
+        //console.log($template[0].outerHTML.trim());
+
+        var prevNode = elementNode;
         model.forEach(function (item, i) {
-            item.$$hashKey = diff.getUniqueKey();
             var node = createNodeWithScope(item, i, model.length).node;
+            insertAfter(node, prevNode);
+            prevNode = node;
+
+            item.$$hashKey = getNodeIndex(node);
             itemHashToNodeMap[item.$$hashKey] = node;
-            domFragment.appendChild(node);
         });
-        insertAfter(domFragment, elementNode);
         hideNode(elementNode);
+
         console.timeEnd('creating dom');
 
         // watch model for changes if
         // it is not one-time binding
         if (!/^::/.test(expression)) {
-            // todo: consider delayed(renderChanges)
+            // todo: make delayed(renderChanges) (?)
             $scope.$watchCollection(getModel, renderChanges);
         }
 
@@ -146,19 +158,41 @@
             difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
                 var node = itemHashToNodeMap[item.$$hashKey];
+                var index, swapWithIndex, swapWithNode, swapWithItem;
 
                 switch (diffEntry.state) {
 
                     case diff.CREATED:
                         if (node) {
-                            // todo: check indexes here
-                            var nodeList = elementParentNode.childNodes;
-                            nodeList = [].slice.call(nodeList);
-                            var index = nodeList.indexOf(node);
-                            console.log('NODE EXISTS', node, index, i);
+                            index = item.$$hashKey;
+                            swapWithIndex = elementNodeIndex + i + 1;
+                            swapWithNode = getNodeByIndex(swapWithIndex);
+                            console.log('NODE EXISTS', index, swapWithIndex);
+
+                            if (node !== swapWithNode) {
+                                if (!node.$swapped) {
+                                    if (node.nodeType === 8) {
+                                        // swap nodes
+                                        insertAfter(swapWithNode.nextSibling, node.nextSibling);
+                                        // swap comments
+                                        insertAfter(swapWithNode, node);
+                                        throw 123;
+                                    } else {
+                                        // swap nodes
+                                        node.style.color = 'green';
+                                        swapWithNode.style.color = 'red';
+                                        insertAfter(swapWithNode, node);
+                                        console.log('SWAP', node, swapWithNode);
+                                    }
+                                    swapWithNode.$swapped = true;
+                                } else {
+                                    swapWithNode.$swapped = false;
+                                }
+                            }
+
+                            // show must go on!
                             showNode(node);
                         } else {
-                            item.$$hashKey = diff.getUniqueKey();
                             var nodeWithScope = createNodeWithScope(item, true);
                             node = nodeWithScope.node;
                             if (prevNode) {
@@ -166,14 +200,16 @@
                             } else {
                                 insertAfter(node, elementNode);
                             }
-                            //nodeWithScope.scope.$digest(); // todo: really needed?
+                            // todo: remove is safe (?)
+                            //nodeWithScope.scope.$digest();
+                            item.$$hashKey = getNodeIndex(node);
                             itemHashToNodeMap[item.$$hashKey] = node;
                         }
                         break;
 
                     case diff.MOVED:
-                        var swapWithItem = list[diffEntry.iPrev];
-                        var swapWithNode = itemHashToNodeMap[swapWithItem.$$hashKey];
+                        swapWithItem = list[diffEntry.iPrev];
+                        swapWithNode = itemHashToNodeMap[swapWithItem.$$hashKey];
 
                         if (!node.$swapped) {
                             if (node.nodeType === 8) {
@@ -214,9 +250,9 @@
                 if (afterNode.nodeType == 8) {
                     afterNode = afterNode.nextSibling;
                 }
-                elementParentNode.insertBefore(node, afterNode.nextSibling);
+                parentNode.insertBefore(node, afterNode.nextSibling);
             } else {
-                elementParentNode.appendChild(node);
+                parentNode.appendChild(node);
             }
         }
 
@@ -225,6 +261,8 @@
             itemScope[iteratorName] = item;
             itemScope.$index = i;
             itemScope.$first = i == 0;
+            // todo: compare with ng-repeat
+            itemScope.$middle = i == Math.floor(total/2);
             itemScope.$last = i == total - 1;
             itemScope.$even = i % 2 == 0;
             itemScope.$odd = !itemScope.$even;
@@ -233,6 +271,7 @@
             $compile($clone)(itemScope);
 
             var node = $clone[0];
+            node.$swapped = false;
 
             return { node: node, scope: itemScope };
         }
@@ -251,12 +290,22 @@
             node.className += ' ng-hide';
         }
 
-        //function deleteNode(node) {
-        //    if (node.nodeType == 8) {
-        //        node.parentNode.removeChild(node.nextSibling);
-        //    }
-        //    node.parentNode.removeChild(node);
-        //}
+        function deleteNode(node) {
+            if (node.nodeType == 8) {
+                node.parentNode.removeChild(node.nextSibling);
+            }
+            node.parentNode.removeChild(node);
+        }
+
+        function getNodeIndex(node) {
+            var nodeList = parentNode.childNodes;
+            return indexOf.call(nodeList, node);
+        }
+
+        function getNodeByIndex(index) {
+            var nodeList = parentNode.childNodes;
+            return nodeList[index];
+        }
 
         ///////////////////////////////////////////////////////////////////////////
 

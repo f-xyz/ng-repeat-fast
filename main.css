@@ -1,7 +1,3 @@
-.ng-hide:not(.ng-hide-animate) {
-  display: block !important;
-  opacity: .3;
-}
 body {
   margin: 20px;
   background-color: #262626;
