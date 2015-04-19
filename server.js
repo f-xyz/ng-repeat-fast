@@ -7,10 +7,10 @@ var colors = require('colors');
 var argv = require('optimist').argv;
 
 var port = argv.port || 5000;
-var root = argv.root || argv._[0] || __dirname;
+var root = argv.root || __dirname;
 
-srv.get('/shaders', function (req, res) {
-    fs.list('shaders/').then(function (shaders) {
+srv.get('/files', function (req, res) {
+    fs.list('./').then(function (shaders) {
         res.header('Content-Type', 'text/json');
         res.send(JSON.stringify(shaders));
     });
@@ -22,8 +22,8 @@ srv.use(express.static(root));
 srv.listen(port);
 
 console.log('Nyan HTTPd'.yellow.underline);
-console.log('  * port: '.white + port.toString().green);
-console.log('  * root: '.white + root.toString().green);
+console.log('  --port='.white + port.toString().green);
+console.log('  --root='.white + root.toString().green);
 console.log(['',
 '░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░',
 '░░░░░░░░░░▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄░░░░░░░░░',
@@ -33,7 +33,7 @@ console.log(['',
 '░▄▄▄▄▄░░█░░░░░░▀░░░░▀█░░▀▄░░░░░█▀▀░██░░',
 '░██▄▀██▄█░░░▄░░░░░░░██░░░░▀▀▀▀▀░░░░██░░',
 '░░▀██▄▀██░░░░░░░░▀░██▀░░░░░░░░░░░░░▀██░',
-'░░░░▀████░▀░░░░▄░░░██░░░▄█░░░░▄░▄█░░██░',
+'░░░░▀████░▀░░░░▄░░░██░░░▄█░░░░░░▄█░░██░',
 '░░░░░░░▀█░░░░▄░░░░░██░░░░▄░░░▄░░▄░░░██░',
 '░░░░░░░▄█▄░░░░░░░░░░░▀▄░░▀▀▀▀▀▀▀▀░░▄▀░░',
 '░░░░░░█▀▀█████████▀▀▀▀████████████▀░░░░',

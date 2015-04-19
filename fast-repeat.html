@@ -44,18 +44,18 @@
 
         <div class="list" ng-if="!useFastRepeat">
             <div class="list-item"
-                 ng-repeat="item in list | filter: search"
+                 ng-repeat="item in list | filter: search track by $index"
                  ng-include="'item-template'">
             </div>
         </div>
 
         <!--ng-include="'item-template'">-->
         <div class="list" ng-if="useFastRepeat">
-            <div class="placeholder"></div>
+            <div class="placeholder">------</div>
             <div class="list-item"
                  fast-repeat="item in list | filter: search"
-                >{{ ::item.value }} </div>
-            <div class="placeholder"></div>
+                 ng-include="'item-template'">{{ ::item.value }} </div>
+            <div class="placeholder">------</div>
         </div>
     </div>
 

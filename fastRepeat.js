@@ -5,6 +5,7 @@
 
     var indexOf = [].indexOf;
 
+    //region createConsole
     /* istanbul ignore next */
     var console = (function createConsole(enabled) {
 
@@ -20,6 +21,9 @@
 
         return {
             log: apply(nativeConsole.log),
+            info: apply(nativeConsole.info),
+            warn: apply(nativeConsole.warn),
+            error: apply(nativeConsole.error),
             time: apply(nativeConsole.time),
             timeEnd: apply(nativeConsole.timeEnd),
             table: apply(nativeConsole.table),
@@ -28,6 +32,7 @@
         };
 
     })(true);
+    //endregion
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +54,6 @@
      * @param {function} f
      * @returns {function}
      */
-    /*
     function delayed(f) {
         // unused arguments are for
         // angular DI signature parser
@@ -60,7 +64,6 @@
             }, 0);
         }
     }
-    */
 
     /**
      * @param $scope
@@ -105,7 +108,7 @@
 
         console.time('creating dom');
         var elementNode = $element[0];
-        var parentNode = elementNode.parentNode;
+        var elementParentNode = elementNode.parentNode;
         //console.log('element', elementNode);
 
         var elementNodeIndex = getNodeIndex(elementNode);
@@ -116,14 +119,21 @@
 
         var prevNode = elementNode;
         model.forEach(function (item, i) {
-            var node = createNodeWithScope(item, i, model.length).node;
+            var node = createNode(item, i, model.length);
             insertAfter(node, prevNode);
             prevNode = node;
-
-            item.$$hashKey = getNodeIndex(node);
+            // store node
+            item.$$hashKey = getNodeIndex(node) - elementNodeIndex - 1;
             itemHashToNodeMap[item.$$hashKey] = node;
         });
         hideNode(elementNode);
+
+        // remove comment nodes created by ng-include
+        delayed(function () {
+            console.time('removing comment nodes');
+            model.forEach(replaceCommentNodeByNext);
+            console.timeEnd('removing comment nodes');
+        })();
 
         console.timeEnd('creating dom');
 
@@ -154,7 +164,7 @@
             console.log('difference', difference);
 
             console.time('dom');
-            var prevNode; // insert new node after me
+            var prevNode = elementNode; // insert new node after me
             difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
                 var node = itemHashToNodeMap[item.$$hashKey];
@@ -164,46 +174,32 @@
 
                     case diff.CREATED:
                         if (node) {
-                            index = item.$$hashKey;
+                            /*index = item.$$hashKey;
                             swapWithIndex = elementNodeIndex + i + 1;
                             swapWithNode = getNodeByIndex(swapWithIndex);
                             console.log('NODE EXISTS', index, swapWithIndex);
 
                             if (node !== swapWithNode) {
                                 if (!node.$swapped) {
-                                    if (node.nodeType === 8) {
-                                        // swap nodes
-                                        insertAfter(swapWithNode.nextSibling, node.nextSibling);
-                                        // swap comments
-                                        insertAfter(swapWithNode, node);
-                                        throw 123;
-                                    } else {
-                                        // swap nodes
-                                        node.style.color = 'green';
-                                        swapWithNode.style.color = 'red';
-                                        insertAfter(swapWithNode, node);
-                                        console.log('SWAP', node, swapWithNode);
-                                    }
+                                    // swap nodes
+                                    insertAfter(swapWithNode, node);
+                                    console.log('SWAP', node, swapWithNode);
                                     swapWithNode.$swapped = true;
                                 } else {
                                     swapWithNode.$swapped = false;
                                 }
-                            }
-
+                            }*/
                             // show must go on!
                             showNode(node);
                         } else {
-                            var nodeWithScope = createNodeWithScope(item, true);
-                            node = nodeWithScope.node;
-                            if (prevNode) {
-                                insertAfter(node, prevNode);
-                            } else {
-                                insertAfter(node, elementNode);
-                            }
-                            // todo: remove is safe (?)
-                            //nodeWithScope.scope.$digest();
-                            item.$$hashKey = getNodeIndex(node);
+                            // todo
+                            node = createNode(item, i, difference.length);
+                            insertAfter(node, prevNode);
+                            item.$$hashKey = getNodeIndex(node) - elementNodeIndex - 1;
                             itemHashToNodeMap[item.$$hashKey] = node;
+                            delayed(function () {
+                                replaceCommentNodeByNext(item);
+                            })();
                         }
                         break;
 
@@ -212,15 +208,8 @@
                         swapWithNode = itemHashToNodeMap[swapWithItem.$$hashKey];
 
                         if (!node.$swapped) {
-                            if (node.nodeType === 8) {
-                                // swap nodes
-                                insertAfter(node.nextSibling, swapWithNode.nextSibling);
-                                // swap comments
-                                insertAfter(node, swapWithNode);
-                            } else {
-                                // swap nodes
-                                insertAfter(node, swapWithNode);
-                            }
+                            // swap nodes
+                            insertAfter(node, swapWithNode);
                             swapWithNode.$swapped = true;
                         } else {
                             node.$swapped = false;
@@ -238,6 +227,9 @@
                 prevNode = node;
             });
 
+            console.time('');
+            console.timeEnd('');
+
             console.timeEnd('dom');
             console.timeEnd('renderChanges');
         }
@@ -246,13 +238,9 @@
 
         function insertAfter(node, afterNode) {
             if (afterNode.nextSibling) {
-                // todo: consider moving before previous if
-                if (afterNode.nodeType == 8) {
-                    afterNode = afterNode.nextSibling;
-                }
-                parentNode.insertBefore(node, afterNode.nextSibling);
+                elementParentNode.insertBefore(node, afterNode.nextSibling);
             } else {
-                parentNode.appendChild(node);
+                elementParentNode.appendChild(node);
             }
         }
 
@@ -261,9 +249,8 @@
             itemScope[iteratorName] = item;
             itemScope.$index = i;
             itemScope.$first = i == 0;
-            // todo: compare with ng-repeat
-            itemScope.$middle = i == Math.floor(total/2);
             itemScope.$last = i == total - 1;
+            itemScope.$middle = !itemScope.$first && !itemScope.$last;
             itemScope.$even = i % 2 == 0;
             itemScope.$odd = !itemScope.$even;
 
@@ -271,49 +258,61 @@
             $compile($clone)(itemScope);
 
             var node = $clone[0];
-            node.$swapped = false;
 
             return { node: node, scope: itemScope };
         }
 
+        function createNode(item, i, total) {
+            return createNodeWithScope(item, i, total).node;
+        }
+
         function showNode(node) {
-            if (node.nodeType == 8) {
-                node = node.nextSibling;
-            }
             node.className = node.className.slice(0, -8);
         }
 
         function hideNode(node) {
-            if (node.nodeType == 8) {
-                node = node.nextSibling;
-            }
             node.className += ' ng-hide';
         }
 
         function deleteNode(node) {
-            if (node.nodeType == 8) {
-                node.parentNode.removeChild(node.nextSibling);
-            }
             node.parentNode.removeChild(node);
         }
 
         function getNodeIndex(node) {
-            var nodeList = parentNode.childNodes;
+            var nodeList = elementParentNode.childNodes;
             return indexOf.call(nodeList, node);
         }
 
         function getNodeByIndex(index) {
-            var nodeList = parentNode.childNodes;
+            var nodeList = elementParentNode.childNodes;
             return nodeList[index];
+        }
+
+        function replaceCommentNodeByNext(item) {
+            var node = itemHashToNodeMap[item.$$hashKey];
+            // if comment node
+            if (node.nodeType === 8) {
+                var realNode = node.nextSibling;
+                elementParentNode.removeChild(node);
+                node = realNode;
+            }
+            itemHashToNodeMap[item.$$hashKey] = node;
+            // set special fields not each node
+            node.$swapped = false;
         }
 
         ///////////////////////////////////////////////////////////////////////////
 
-        // todo: ?
+        // todo: cleanup (?) nothing is allocated?
         //$scope.$on('$destroy', function () {
         //    console.log('destroy');
         //    console.log($element);
         //});
+
+        window.dump = function () {
+            console.log('elementNode', elementNode);
+            console.log('itemHashToNodeMap', itemHashToNodeMap);
+        };
     }
 
 })();

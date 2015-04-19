@@ -6,18 +6,24 @@
     var app = angular.module('app', ['fastRepeat']);
 
     var $compile, $rootScope;
+    var templateItem =
+        '{{ ::item.value }}';
     var template =
         '<div fast-repeat="item in list">' +
-            '{{ ::item.value }}' +
+            templateItem +
         '</div>';
+    var templateNgInclude =
+        '<div fast-repeat="item in list" ng-include="\'item\'"></div>';
+
+    app.run(function ($templateCache) {
+        $templateCache.put('item', templateItem);
+    });
 
     /**
      * @param {function} f
      */
     function delay(f) {
-        setTimeout(function () {
-            f.apply(this);
-        }, 0);
+        setTimeout(function () { f.apply(this) }, 0);
     }
 
     /**
@@ -26,6 +32,17 @@
     function createElement() {
         // element is document fragment
         var element = $compile(template)($rootScope);
+        $rootScope.$digest();
+
+        return $(element[0].parentNode);
+    }
+
+    /**
+     * @returns {jQuery}
+     */
+    function createElementWithNgInclude() {
+        // element is document fragment
+        var element = $compile(templateNgInclude)($rootScope);
         $rootScope.$digest();
 
         return $(element[0].parentNode);
@@ -172,6 +189,44 @@
         });
     });
 
+    describe('# should work with ng-include', function () {
+
+        it('should remove comment nodes on initialization', function (done) {
+            // arrange
+            $rootScope.list = [{ value: 0 }];
+            var container = createElementWithNgInclude();
+            $rootScope.$digest();
+            // act
+            // assert
+            delay(function () {
+                [].forEach.call(container[0].childNodes, function (node) {
+                    node.nodeType.should.not.eq(8);
+                });
+                done();
+            });
+        });
+
+        it('should remove comment nodes on item creation', function (done) {
+            // arrange
+            $rootScope.list = [{ value: 0 }];
+            var container = createElementWithNgInclude();
+            $rootScope.$digest();
+            // act
+            delay(function () {
+                $rootScope.list.push({ value: 1 });
+                $rootScope.$digest();
+                // assert
+                delay(function () {
+                    [].forEach.call(container[0].childNodes, function (node) {
+                        node.nodeType.should.not.eq(8);
+                    });
+                    done();
+                });
+            });
+        });
+
+    });
+
     describe('# complex DOM operations', function () {
 
         it('should reuse hidden node if item has been added again', function () {
@@ -232,12 +287,6 @@
             });
         });
 
-    });
-
-    xdescribe('# should work with ng-include (comment nodes)', function () {
-        it('-> TODO', function () {
-            //
-        });
     });
 
 })();
