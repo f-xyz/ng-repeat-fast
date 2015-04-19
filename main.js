@@ -12,12 +12,12 @@ app.controller('main', function ($scope) {
     $scope.search = '';
 
     setTimeout(function () {
-        $scope.search = 'x';
-        $scope.$digest();
-        $scope.swap();
-        $scope.$digest();
-        $scope.search = '';
-        $scope.$digest();
+        //$scope.search = 'x';
+        //$scope.$digest();
+        //$scope.swap();
+        //$scope.$digest();
+        //$scope.search = '';
+        //$scope.$digest();
     }, 0);
 
     // getters
@@ -38,9 +38,6 @@ app.controller('main', function ($scope) {
     $scope.toggleFastRepeat = function () {
         $scope.useFastRepeat = !$scope.useFastRepeat;
     };
-    $scope.addToEnd = function () {
-        $scope.list.push({ value: 'last one' });
-    };
     $scope.addToBegin = function () {
         $scope.list.unshift({ value: 'first one' });
     };
@@ -49,6 +46,12 @@ app.controller('main', function ($scope) {
         var head = $scope.list.slice(0, 1);
         var tail = $scope.list.slice(1);
         $scope.list = head.concat([item], tail);
+    };
+    $scope.addToEnd = function () {
+        $scope.list.push({ value: 'last one' });
+    };
+    $scope.reverse = function () {
+        $scope.list = $scope.list.reverse();
     };
     $scope.swap = function () {
         var tmp = $scope.list[0];

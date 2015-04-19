@@ -12,10 +12,12 @@
         var nativeConsole = window.console;
 
         function apply(fn) {
-            return function () {
-                if (enabled) {
+            if (enabled && fn) {
+                return function () {
                     fn.apply(nativeConsole, arguments);
                 }
+            } else {
+                return function () {};
             }
         }
 
@@ -109,9 +111,8 @@
         console.time('creating dom');
         var elementNode = $element[0];
         var elementParentNode = elementNode.parentNode;
+        var elementNodeIndex = getNodeIndex(elementNode, true);
         //console.log('element', elementNode);
-
-        var elementNodeIndex = getNodeIndex(elementNode);
 
         var $template = $element.clone();
         $template.removeAttr('fast-repeat');
@@ -123,7 +124,7 @@
             insertAfter(node, prevNode);
             prevNode = node;
             // store node
-            item.$$hashKey = getNodeIndex(node) - elementNodeIndex - 1;
+            item.$$hashKey = diff.getUniqueKey();
             itemHashToNodeMap[item.$$hashKey] = node;
         });
         hideNode(elementNode);
@@ -140,7 +141,6 @@
         // watch model for changes if
         // it is not one-time binding
         if (!/^::/.test(expression)) {
-            // todo: make delayed(renderChanges) (?)
             $scope.$watchCollection(getModel, renderChanges);
         }
 
@@ -161,7 +161,11 @@
             console.time('diff');
             var difference = diff(list, prev, '$$hashKey');
             console.timeEnd('diff');
-            console.log('difference', difference);
+            console.table(difference.map(function (x) {
+                x.value = x.item.value;
+                x.$$hashKey = x.item.$$hashKey;
+                return x;
+            }));
 
             console.time('dom');
             var prevNode = elementNode; // insert new node after me
@@ -174,28 +178,15 @@
 
                     case diff.CREATED:
                         if (node) {
-                            /*index = item.$$hashKey;
-                            swapWithIndex = elementNodeIndex + i + 1;
-                            swapWithNode = getNodeByIndex(swapWithIndex);
-                            console.log('NODE EXISTS', index, swapWithIndex);
-
-                            if (node !== swapWithNode) {
-                                if (!node.$swapped) {
-                                    // swap nodes
-                                    insertAfter(swapWithNode, node);
-                                    console.log('SWAP', node, swapWithNode);
-                                    swapWithNode.$swapped = true;
-                                } else {
-                                    swapWithNode.$swapped = false;
-                                }
-                            }*/
-                            // show must go on!
+                            // todo: check indexes and swap nodes
+                            console.log('CREATE -> NODE EXISTS', item, node);
                             showNode(node);
                         } else {
+                            console.log('CREATE -> NEW NODE', item, node);
                             // todo
                             node = createNode(item, i, difference.length);
                             insertAfter(node, prevNode);
-                            item.$$hashKey = getNodeIndex(node) - elementNodeIndex - 1;
+                            item.$$hashKey = diff.getUniqueKey();
                             itemHashToNodeMap[item.$$hashKey] = node;
                             delayed(function () {
                                 replaceCommentNodeByNext(item);
@@ -204,20 +195,16 @@
                         break;
 
                     case diff.MOVED:
-                        swapWithItem = list[diffEntry.iPrev];
-                        swapWithNode = itemHashToNodeMap[swapWithItem.$$hashKey];
-
-                        if (!node.$swapped) {
-                            // swap nodes
-                            insertAfter(node, swapWithNode);
-                            swapWithNode.$swapped = true;
-                        } else {
-                            node.$swapped = false;
+                        var nodeIndex = getNodeIndex(node);
+                        if (nodeIndex != diffEntry.iList) {
+                            // mode to index
+                            swapWithNode = getNodeByIndex(diffEntry.iList);
+                            elementParentNode.insertBefore(node, swapWithNode);
                         }
-
                         break;
 
                     case diff.DELETED:
+                        console.log('DELETE', item, node);
                         hideNode(node);
                         //deleteNode(node);
                         //delete itemHashToNodeMap[item.$$hashKey];
@@ -226,6 +213,14 @@
 
                 prevNode = node;
             });
+
+            //delayed(function () {
+            //    difference.forEach(function (item) {
+            //        if (item.state === 1) {
+            //            replaceCommentNodeByNext(item);
+            //        }
+            //    });
+            //})();
 
             console.time('');
             console.timeEnd('');
@@ -278,13 +273,20 @@
             node.parentNode.removeChild(node);
         }
 
-        function getNodeIndex(node) {
+        function getNodeIndex(node, absolute) {
             var nodeList = elementParentNode.childNodes;
-            return indexOf.call(nodeList, node);
+            var index = indexOf.call(nodeList, node);
+            if (!absolute) {
+                index = index - elementNodeIndex - 1;
+            }
+            return index;
         }
 
-        function getNodeByIndex(index) {
+        function getNodeByIndex(index, absolute) {
             var nodeList = elementParentNode.childNodes;
+            if (!absolute) {
+                index = index + elementNodeIndex + 1;
+            }
             return nodeList[index];
         }
 
@@ -294,11 +296,8 @@
             if (node.nodeType === 8) {
                 var realNode = node.nextSibling;
                 elementParentNode.removeChild(node);
-                node = realNode;
+                itemHashToNodeMap[item.$$hashKey] = realNode;
             }
-            itemHashToNodeMap[item.$$hashKey] = node;
-            // set special fields not each node
-            node.$swapped = false;
         }
 
         ///////////////////////////////////////////////////////////////////////////

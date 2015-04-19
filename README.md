@@ -3,7 +3,7 @@
 
 Fast-repeat is a much faster implementation 
 of Angular directive `ng-repeat`.
-Was build with performance in mind (only).
+Was build with performance in mind (to be honest - only).
 
 * Caches DOM nodes (and eats more memory).
 * Works much faster than `ng-repeat`.
@@ -39,3 +39,6 @@ Was build with performance in mind (only).
      ng-include="'item-template.html'">
 </div>
 ```
+
+## License
+MIT

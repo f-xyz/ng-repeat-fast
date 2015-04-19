@@ -34,17 +34,23 @@
         </section>
 
         <div class="row">
-            <div class="col-xs-7">
+            <div class="col-xs-5">
                 <input type="search" ng-model="search" autofocus>
             </div>
-            <div class="col-xs-5 text-right">
-                <button ng-click="swap()">Swap 1st and 2nd</button>
+            <div class="col-xs-2 text-right">
+                <button ng-click="reverse()">Rev.</button>
+            </div>
+            <div class="col-xs-3 text-right">
+                <button ng-click="swap()">1 <=> 2</button>
+            </div>
+            <div class="col-xs-2 text-right">
+                <button ng-click="list = []">CLR</button>
             </div>
         </div>
 
         <div class="list" ng-if="!useFastRepeat">
             <div class="list-item"
-                 ng-repeat="item in list | filter: search track by $index"
+                 ng-repeat="item in list | filter: search"
                  ng-include="'item-template'">
             </div>
         </div>

@@ -80,6 +80,7 @@
             items.length.should.eq(2);
             items.eq(0).text().should.eq('0');
             items.eq(1).text().should.eq('1');
+            // todo: check full DOM built
         });
 
         it('should hide template item', function () {
