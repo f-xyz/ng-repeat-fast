@@ -10,6 +10,7 @@
     var console = (function createConsole(enabled) {
 
         var nativeConsole = window.console;
+        var nop = function () {};
 
         function apply(fn) {
             if (enabled && fn) {
@@ -17,7 +18,7 @@
                     fn.apply(nativeConsole, arguments);
                 }
             } else {
-                return function () {};
+                return nop;
             }
         }
 
@@ -106,6 +107,7 @@
         var prevNode = elementNode;
         model.forEach(function (item, i) {
             var node = createNode(item, i, model.length);
+            //
             insertAfter(node, prevNode);
             prevNode = node;
             // store node
@@ -204,6 +206,10 @@
             }
         }
 
+        function createNode(item, i, total) {
+            return createNodeWithScope(item, i, total).node;
+        }
+
         function createNodeWithScope(item, i, total) {
             var itemScope = $scope.$new();
             itemScope[iteratorName] = item;
@@ -221,10 +227,6 @@
                 node: $clone[0],
                 scope: itemScope
             };
-        }
-
-        function createNode(item, i, total) {
-            return createNodeWithScope(item, i, total).node;
         }
 
         function showNode(node) {
