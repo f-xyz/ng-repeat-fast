@@ -190,42 +190,7 @@
         });
     });
 
-    describe('# should work with ng-include', function () {
-
-        it('should remove comment nodes on initialization', function (done) {
-            // arrange
-            $rootScope.list = [{ value: 0 }];
-            var container = createElementWithNgInclude();
-            $rootScope.$digest();
-            // act
-            // assert
-            delay(function () {
-                [].forEach.call(container[0].childNodes, function (node) {
-                    node.nodeType.should.not.eq(8);
-                });
-                done();
-            });
-        });
-
-        it('should remove comment nodes on item creation', function (done) {
-            // arrange
-            $rootScope.list = [{ value: 0 }];
-            var container = createElementWithNgInclude();
-            $rootScope.$digest();
-            // act
-            delay(function () {
-                $rootScope.list.push({ value: 1 });
-                $rootScope.$digest();
-                // assert
-                delay(function () {
-                    [].forEach.call(container[0].childNodes, function (node) {
-                        node.nodeType.should.not.eq(8);
-                    });
-                    done();
-                });
-            });
-        });
-
+    xdescribe('# should work with ng-include', function () {
     });
 
     describe('# complex DOM operations', function () {
@@ -254,6 +219,15 @@
     });
 
     describe('# initialization', function () {
+
+        it('should throw if ng-include is set on repeated element', function () {
+            $rootScope.list = [];
+            var template = '<div fast-repeat="list" ng-include></div>';
+            var action = function () {
+                $compile(template)($rootScope);
+            };
+            action.should.throw();
+        });
 
         it('should parse expression', function () {
             $rootScope.list = [];

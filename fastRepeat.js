@@ -53,21 +53,6 @@
     });
 
     /**
-     * @param {function} f
-     * @returns {function}
-     */
-    function delayed(f) {
-        // unused arguments are for
-        // angular DI signature parser
-        return function (a, b) {
-            var args = arguments;
-            setTimeout(function () {
-                f.apply(this, args);
-            }, 0);
-        }
-    }
-
-    /**
      * @param $scope
      * @param $element
      * @param $parse
@@ -75,15 +60,15 @@
      * @param {{ fastRepeat: string }} $attrs
      */
     function fastRepeatLink($scope, $element, $attrs, $parse, $compile) {
-        // todo - fix exception after
-        //          1. Input 'x' to filter out all items
-        //          2. Press Add 1st
-        //          3. Press Add 2st
-        //          4. Clear filter -> thrown
         // todo - animation support
         // todo - track by
-        // todo - garbage collection for DOM nodes (?)
-        //        timer-based?
+        // todo - garbage collection for DOM nodes (?) timer-based?
+
+        if ('ngInclude' in $attrs) {
+            throw Error('fastRepeat: ngInclude on repeated ' +
+                        'element is not supported. ' +
+                        'Please create inner element with ng-include.');
+        }
 
         // parse ng-repeat expression /////////////////////////////////////////
 
@@ -129,13 +114,6 @@
         });
         hideNode(elementNode);
 
-        // remove comment nodes created by ng-include
-        delayed(function () {
-            console.time('removing comment nodes');
-            model.forEach(replaceCommentNodeByNext);
-            console.timeEnd('removing comment nodes');
-        })();
-
         console.timeEnd('creating dom');
 
         // watch model for changes if
@@ -172,30 +150,29 @@
             difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
                 var node = itemHashToNodeMap[item.$$hashKey];
-                var index, swapWithIndex, swapWithNode, swapWithItem;
+                var nodeIndex, swapWithNode;
 
                 switch (diffEntry.state) {
 
                     case diff.CREATED:
                         if (node) {
-                            // todo: check indexes and swap nodes
-                            console.log('CREATE -> NODE EXISTS', item, node);
+                            nodeIndex = getNodeIndex(node);
+                            if (nodeIndex !== i) {
+                                // mode to index
+                                swapWithNode = getNodeByIndex(i);
+                                elementParentNode.insertBefore(node, swapWithNode);
+                            }
                             showNode(node);
                         } else {
-                            console.log('CREATE -> NEW NODE', item, node);
-                            // todo
                             node = createNode(item, i, difference.length);
                             insertAfter(node, prevNode);
                             item.$$hashKey = diff.getUniqueKey();
                             itemHashToNodeMap[item.$$hashKey] = node;
-                            delayed(function () {
-                                replaceCommentNodeByNext(item);
-                            })();
                         }
                         break;
 
                     case diff.MOVED:
-                        var nodeIndex = getNodeIndex(node);
+                        nodeIndex = getNodeIndex(node);
                         if (nodeIndex != diffEntry.iList) {
                             // mode to index
                             swapWithNode = getNodeByIndex(diffEntry.iList);
@@ -204,7 +181,6 @@
                         break;
 
                     case diff.DELETED:
-                        console.log('DELETE', item, node);
                         hideNode(node);
                         //deleteNode(node);
                         //delete itemHashToNodeMap[item.$$hashKey];
@@ -213,17 +189,6 @@
 
                 prevNode = node;
             });
-
-            //delayed(function () {
-            //    difference.forEach(function (item) {
-            //        if (item.state === 1) {
-            //            replaceCommentNodeByNext(item);
-            //        }
-            //    });
-            //})();
-
-            console.time('');
-            console.timeEnd('');
 
             console.timeEnd('dom');
             console.timeEnd('renderChanges');
@@ -252,9 +217,10 @@
             var $clone = $template.clone();
             $compile($clone)(itemScope);
 
-            var node = $clone[0];
-
-            return { node: node, scope: itemScope };
+            return {
+                node: $clone[0],
+                scope: itemScope
+            };
         }
 
         function createNode(item, i, total) {
@@ -290,16 +256,6 @@
             return nodeList[index];
         }
 
-        function replaceCommentNodeByNext(item) {
-            var node = itemHashToNodeMap[item.$$hashKey];
-            // if comment node
-            if (node.nodeType === 8) {
-                var realNode = node.nextSibling;
-                elementParentNode.removeChild(node);
-                itemHashToNodeMap[item.$$hashKey] = realNode;
-            }
-        }
-
         ///////////////////////////////////////////////////////////////////////////
 
         // todo: cleanup (?) nothing is allocated?
@@ -307,11 +263,6 @@
         //    console.log('destroy');
         //    console.log($element);
         //});
-
-        window.dump = function () {
-            console.log('elementNode', elementNode);
-            console.log('itemHashToNodeMap', itemHashToNodeMap);
-        };
     }
 
 })();
