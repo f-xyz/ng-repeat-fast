@@ -12,12 +12,12 @@ app.controller('main', function ($scope) {
     $scope.search = '';
 
     setTimeout(function () {
-        $scope.search = 'x';
-        $scope.$digest();
-        $scope.swap();
-        $scope.$digest();
-        $scope.search = '';
-        $scope.$digest();
+        //$scope.search = 'x';
+        //$scope.$digest();
+        //$scope.swap();
+        //$scope.$digest();
+        //$scope.search = '';
+        //$scope.$digest();
     }, 0);
 
     // getters

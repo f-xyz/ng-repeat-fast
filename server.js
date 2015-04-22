@@ -21,7 +21,7 @@ srv.use(express.directory(root));
 srv.use(express.static(root));
 srv.listen(port);
 
-console.log('Nyan HTTPd'.yellow.underline);
+console.log('GSOM-9000 HTTP Server'.yellow.underline);
 console.log('  --port='.white + port.toString().green);
 console.log('  --root='.white + root.toString().green);
 console.log(['',

@@ -25,7 +25,7 @@ Was build with performance in mind (to be honest - only).
 ```html
 <div class="list-item" fast-repeat="item in list | filter: search">
     {{ item.value }}
- </div>
+</div>
 ```
 
 ## Render just once
@@ -35,7 +35,7 @@ Works with one-time binding syntax.
 ```html
 <div class="list-item" fast-repeat="item in ::list">
     {{ ::item.value }}
- </div>
+</div>
 ```
 
 ## With `ng-include`

@@ -1,16 +1,4 @@
-(function (root, factory) {
-    /* istanbul ignore next */
-    if (typeof root.define === 'function' && root.define.amd) {
-        // AMD. Register as an anonymous module.
-        root.define(factory);
-    } else if (typeof module === 'object') {
-        // CommonJS
-        module.exports = factory();
-    } else {
-        // Browser globals
-        root[factory.name] = factory();
-    }
-}(this, function fastRepeat() {
+(function fastRepeatMain(global) {
     'use strict';
 
     // todo: make bower package
@@ -19,9 +7,9 @@
 
     //region createConsole
     /* istanbul ignore next */
-    var console = (function createConsole(enabled) {
+    var console = (function createConsole(global, enabled) {
 
-        var nativeConsole = window.console;
+        var nativeConsole = global.console;
         var nop = function () {};
 
         function apply(fn) {
@@ -46,7 +34,7 @@
             set enabled(value) { enabled = value }
         };
 
-    })(true);
+    })(global, localStorage.debug);
     //endregion
 
     ///////////////////////////////////////////////////////////////////////////
@@ -96,11 +84,11 @@
         var elementNode = $element[0];
         var elementParentNode = elementNode.parentNode;
         var elementNodeIndex = getNodeIndex(elementNode, true);
-        //console.log('element', elementNode);
+        console.log('element', elementNode);
 
         var $template = $element.clone();
         $template.removeAttr('fast-repeat');
-        //console.log($template[0].outerHTML.trim());
+        console.log($template[0].outerHTML.trim());
 
         var prevNode = elementNode;
         model.forEach(function (item, i) {
@@ -133,8 +121,6 @@
 
             console.log('# renderChanges');
             console.time('renderChanges');
-            //log('list', list);
-            //log('prev', prev);
 
             console.time('diff');
             var difference = diff(list, prev, '$$hashKey');
@@ -142,7 +128,13 @@
             console.table(difference.map(function (x) {
                 x.value = x.item.value;
                 x.$$hashKey = x.item.$$hashKey;
-                return x;
+                return {
+                    state: x.state,
+                    value: x.item.value,
+                    $$hashKey: x.item.$$hashKey,
+                    iList: x.iList,
+                    iPrev: x.iPrev
+                };
             }));
 
             console.time('dom');
@@ -173,10 +165,14 @@
 
                     case diff.MOVED:
                         nodeIndex = getNodeIndex(node);
+                        console.log('moved', node, nodeIndex, diffEntry.iList, i);
                         if (nodeIndex != diffEntry.iList) {
                             // mode to index
                             swapWithNode = getNodeByIndex(diffEntry.iList);
                             elementParentNode.insertBefore(node, swapWithNode);
+                            console.log('-> done', node);
+                        } else {
+                            console.log('-> ...');
                         }
                         break;
 
@@ -228,6 +224,7 @@
         }
 
         function showNode(node) {
+            // todo: is node is visible - do nothing
             node.className = node.className.slice(0, -8);
         }
 
@@ -281,4 +278,4 @@
             };
         });
 
-}));
+}(typeof window != 'undefined' ? window : global ));

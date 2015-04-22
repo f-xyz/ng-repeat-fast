@@ -22,7 +22,8 @@ module.exports = function(config) {
             'bower_components/angular-mocks/angular-mocks.js',
             'src/list-diff/index.js',
             'src/fastRepeat.js',
-            'src/tests/spec.js'
+            'src/tests/spec.js'/*,
+            'src/list-diff/test*//*.js'*/
         ],
 
 
@@ -35,7 +36,7 @@ module.exports = function(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            '*.js': ['coverage']
+            'src/*.js': ['coverage']
         },
 
 

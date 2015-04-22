@@ -6,17 +6,10 @@
     var app = angular.module('app', ['fastRepeat']);
 
     var $compile, $rootScope;
-    var templateItem =
-        '{{ ::item.value }}';
-    var template =
-        '<div fast-repeat="item in list">' +
-            templateItem +
-        '</div>';
-    var templateNgInclude =
-        '<div fast-repeat="item in list" ng-include="\'item\'"></div>';
+    var template = '<div fast-repeat="item in list">{{ ::item.value }}</div>';
 
     app.run(function ($templateCache) {
-        $templateCache.put('item', templateItem);
+        $templateCache.put('item', template);
     });
 
     /**
@@ -38,22 +31,11 @@
     }
 
     /**
-     * @returns {jQuery}
-     */
-    function createElementWithNgInclude() {
-        // element is document fragment
-        var element = $compile(templateNgInclude)($rootScope);
-        $rootScope.$digest();
-
-        return $(element[0].parentNode);
-    }
-
-    /**
      * @param container
      * @param [includeHidden]
      * @returns {jQuery[]}
      */
-    function getItems(container, includeHidden) {
+    function getVisibleItems(container, includeHidden) {
         if (includeHidden) {
             return container.children();
         } else {
@@ -69,27 +51,29 @@
         });
     });
 
-    describe('# basic DOM operations', function () {
+    describe('# DOM sync.', function () {
 
         it('should render list', function () {
             // arrange, act
             $rootScope.list = [{ value: 0 }, { value: 1 }];
             var container = createElement();
             // assert
-            var items = getItems(container);
+            var items = getVisibleItems(container);
             items.length.should.eq(2);
             items.eq(0).text().should.eq('0');
             items.eq(1).text().should.eq('1');
-            // todo: check full DOM built
         });
 
-        it('should hide template item', function () {
-            // arrange, act
-            $rootScope.list = [];
+        it('should empty list', function () {
+            // arrange
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
             var container = createElement();
+            // act
+            $rootScope.list = [];
+            $rootScope.$digest();
             // assert
-            container.children().length.should.eq(1);
-            //container.children().should.eq();
+            var items = getVisibleItems(container);
+            items.length.should.eq(0);
         });
 
         it('should add node to the beginning', function () {
@@ -98,9 +82,9 @@
             var container = createElement();
             // act
             $rootScope.list.unshift({ value: -1 });
-            $rootScope.$digest();
+            $rootScope.$apply();
             // assert
-            var items = getItems(container);
+            var items = getVisibleItems(container);
             items.length.should.eq(2);
             items.eq(0).text().should.eq('-1');
             items.eq(1).text().should.eq('0');
@@ -114,22 +98,25 @@
             $rootScope.list.push({ value: 1 });
             $rootScope.$digest();
             // assert
-            var items = getItems(container);
+            var items = getVisibleItems(container);
             items.length.should.eq(2);
             items.eq(0).text().should.eq('0');
             items.eq(1).text().should.eq('1');
         });
 
-        it('should insert node in the middle (2nd)', function () {
+        it('should insert node between two', function () {
             // arrange
             $rootScope.list = [{ value: 0 }, { value: 1 }];
             var container = createElement();
             // act
-            $rootScope.list = [$rootScope.list[0], { value: 0.5 }]
-                .concat($rootScope.list.slice(1));
+            $rootScope.list = [
+                $rootScope.list[0],
+                { value: 0.5 },
+                $rootScope.list[1]
+            ];
             $rootScope.$digest();
             // assert
-            var items = getItems(container);
+            var items = getVisibleItems(container);
             items.length.should.eq(3);
             items.eq(0).text().should.eq('0');
             items.eq(1).text().should.eq('0.5');
@@ -144,7 +131,7 @@
             $rootScope.list.shift();
             $rootScope.$digest();
             // assert
-            var items = getItems(container);
+            var items = getVisibleItems(container);
             items.length.should.eq(1);
             items.eq(0).text().should.eq('1');
         });
@@ -157,21 +144,9 @@
             $rootScope.list.pop();
             $rootScope.$digest();
             // assert
-            var items = getItems(container);
+            var items = getVisibleItems(container);
             items.length.should.eq(1);
             items.eq(0).text().should.eq('0');
-        });
-
-        it('should empty list', function () {
-            // arrange
-            $rootScope.list = [{ value: 0 }, { value: 1 }];
-            var container = createElement();
-            // act
-            $rootScope.list = [];
-            $rootScope.$digest();
-            // assert
-            var items = getItems(container);
-            items.length.should.eq(0);
         });
 
         it('should swap two nodes', function () {
@@ -183,19 +158,14 @@
             $rootScope.list = $rootScope.list.reverse();
             $rootScope.$digest();
             // assert
-            var items = getItems(container);
+            var items = getVisibleItems(container);
             items.length.should.eq(2);
             items.eq(0).text().should.eq('1');
             items.eq(1).text().should.eq('0');
         });
-    });
 
-    xdescribe('# should work with ng-include', function () {
-    });
+        it('should reuse hidden node if an item has been added again', function () {
 
-    describe('# complex DOM operations', function () {
-
-        it('should reuse hidden node if item has been added again', function () {
             // arrange
             var item = { value: 0 };
             $rootScope.list = [item];
@@ -211,7 +181,7 @@
             $rootScope.$digest();
 
             // assert
-            var items = getItems(container);
+            var items = getVisibleItems(container);
             items.length.should.eq(1);
             items.eq(0).text().should.eq('0');
         });
