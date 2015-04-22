@@ -1,47 +1,47 @@
 {
-  "name": "fast-repeat",
-  "version": "0.1.0",
-  "description": "Faster ng-repeat realization.",
-  "main": "fastRepeat.js",
-  "directories": {
-    "test": "tests"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "chai": "^1.10.0",
-    "coffee-script": "^1.8.0",
-    "colors": "^1.0.3",
-    "express": "^3.4.8",
-    "istanbul": "^0.3.13",
-    "karma": "^0.12.31",
-    "karma-chrome-launcher": "^0.1.8",
-    "karma-coverage": "^0.3.1",
-    "karma-mocha": "^0.1.10",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "karma-spec-reporter": "^0.0.19",
-    "mocha": "^2.2.4",
-    "optimist": "^0.6.1",
-    "q-io": "^1.12.0"
-  },
-  "scripts": {
-    "test": "./node_modules/karma/bin/karma start --single-run",
-    "start": "./server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/fantasticMrFox/ng-repeat-fast.git"
-  },
-  "keywords": [
-    "angular",
-    "ng-repeat",
-    "fast",
-    "performance",
-    "fast-repeat"
-  ],
-  "author": "andr",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/fantasticMrFox/ng-repeat-fast/issues"
-  },
-  "homepage": "https://github.com/fantasticMrFox/ng-repeat-fast"
+    "name": "fast-repeat",
+    "version": "0.1.0",
+    "description": "Faster ng-repeat realization that caches DOM nodes.",
+    "main": "fastRepeat.js",
+    "directories": {
+        "test": "tests"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "chai": "^1.10.0",
+        "coffee-script": "^1.8.0",
+        "colors": "^1.0.3",
+        "express": "^3.4.8",
+        "istanbul": "^0.3.13",
+        "karma": "^0.12.31",
+        "karma-chrome-launcher": "^0.1.8",
+        "karma-coverage": "^0.3.1",
+        "karma-mocha": "^0.1.10",
+        "karma-phantomjs-launcher": "^0.1.4",
+        "karma-spec-reporter": "^0.0.19",
+        "mocha": "^2.2.4",
+        "optimist": "^0.6.1",
+        "q-io": "^1.12.0"
+    },
+    "scripts": {
+        "test": "./node_modules/karma/bin/karma start --single-run",
+        "start": "./server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/fantasticMrFox/ng-repeat-fast.git"
+    },
+    "keywords": [
+        "angular",
+        "ng-repeat",
+        "fast",
+        "performance",
+        "fast-repeat"
+    ],
+    "author": "andr",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/fantasticMrFox/ng-repeat-fast/issues"
+    },
+    "homepage": "https://github.com/fantasticMrFox/ng-repeat-fast"
 }

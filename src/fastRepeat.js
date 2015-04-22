@@ -1,4 +1,16 @@
-(function () {
+(function (root, factory) {
+    /* istanbul ignore next */
+    if (typeof root.define === 'function' && root.define.amd) {
+        // AMD. Register as an anonymous module.
+        root.define(factory);
+    } else if (typeof module === 'object') {
+        // CommonJS
+        module.exports = factory();
+    } else {
+        // Browser globals
+        root[factory.name] = factory();
+    }
+}(this, function fastRepeat() {
     'use strict';
 
     // todo: make bower package
@@ -38,20 +50,6 @@
     //endregion
 
     ///////////////////////////////////////////////////////////////////////////
-
-    angular
-    .module('fastRepeat', [])
-    .directive('fastRepeat', function ($parse, $compile) {
-        return {
-            scope: true,
-            restrict: 'A',
-            priority: 1000,
-            terminal: true,
-            link: function ($scope, $element, $attrs) {
-                fastRepeatLink($scope, $element, $attrs, $parse, $compile);
-            }
-        };
-    });
 
     /**
      * @param $scope
@@ -267,4 +265,20 @@
         //});
     }
 
-})();
+    ///////////////////////////////////////////////////////////////////////////
+
+    angular
+        .module('fastRepeat', [])
+        .directive('fastRepeat', function ($parse, $compile) {
+            return {
+                scope: true,
+                restrict: 'A',
+                priority: 1000,
+                terminal: true,
+                link: function ($scope, $element, $attrs) {
+                    fastRepeatLink($scope, $element, $attrs, $parse, $compile);
+                }
+            };
+        });
+
+}));

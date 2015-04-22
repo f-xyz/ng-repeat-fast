@@ -20,9 +20,9 @@ module.exports = function(config) {
             'bower_components/mocha/mocha.js',
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
-            'list-diff/index.js',
-            'fastRepeat.js',
-            'tests/spec.js'
+            'src/list-diff/index.js',
+            'src/fastRepeat.js',
+            'src/tests/spec.js'
         ],
 
 
@@ -65,8 +65,7 @@ module.exports = function(config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['PhantomJS'],
-        //browsers: ['Chrome'],
+        browsers: [/*'Chrome',*/ 'PhantomJS'],
 
 
         // Continuous Integration mode
