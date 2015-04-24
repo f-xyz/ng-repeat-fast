@@ -1,4 +1,4 @@
-(function fastRepeatMain(global) {
+(function fastRepeatMain() {
     'use strict';
 
     // todo: make bower package
@@ -34,7 +34,7 @@
             set enabled(value) { enabled = value }
         };
 
-    })(global, localStorage.debug);
+    })(window, localStorage.debug);
     //endregion
 
     ///////////////////////////////////////////////////////////////////////////
@@ -68,8 +68,6 @@
 
         var iteratorName = match[1];
         var expression = match[2];
-        console.log(iteratorName + ' in ' + expression);
-
         var model = getModel();
         if (!Array.isArray(model)) {
             throw Error('fastRepeat: expected `' + $attrs.fastRepeat + '` ' +
@@ -84,11 +82,9 @@
         var elementNode = $element[0];
         var elementParentNode = elementNode.parentNode;
         var elementNodeIndex = getNodeIndex(elementNode, true);
-        console.log('element', elementNode);
 
         var $template = $element.clone();
         $template.removeAttr('fast-repeat');
-        console.log($template[0].outerHTML.trim());
 
         var prevNode = elementNode;
         model.forEach(function (item, i) {
@@ -119,7 +115,6 @@
         function renderChanges(list, prev) {
             if (list === prev) return;
 
-            console.log('# renderChanges');
             console.time('renderChanges');
 
             console.time('diff');
@@ -139,11 +134,10 @@
 
             console.time('dom');
             var prevNode = elementNode; // insert new node after me
-            var prevItemState;
             difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
                 var node = itemHashToNodeMap[item.$$hashKey];
-                var nodeIndex, swapWithItem, swapWithNode;
+                var nodeIndex, swapWithNode;
 
                 switch (diffEntry.state) {
 
@@ -152,12 +146,6 @@
                             console.log('CREATED (existing)', node);
                             nodeIndex = getNodeIndex(node);
                             swapWithNode = getNodeByIndex(i);
-                            if (i > 0) {
-                                prevItemState = difference[i - 1].state;
-                                if (prevItemState == diff.NOT_MODIFIED) {
-                                    swapWithNode = swapWithNode.nextSibling;
-                                }
-                            }
                             insertAfter(node, swapWithNode);
                             showNode(node);
                         } else {
@@ -169,15 +157,14 @@
                         }
                         break;
 
-                    case diff.NOT_MODIFIED:
                     case diff.MOVED:
+                    case diff.NOT_MODIFIED:
                         nodeIndex = getNodeIndex(node);
                         swapWithNode = getNodeByIndex(i);
                         insertAfter(node, swapWithNode);
                         break;
 
                     case diff.DELETED:
-                        console.log('DELETED', node);
                         hideNode(node);
                         //deleteNode(node);
                         //delete itemHashToNodeMap[item.$$hashKey];
@@ -226,10 +213,6 @@
             node.className += ' ng-hide';
         }
 
-        function deleteNode(node) {
-            node.parentNode.removeChild(node);
-        }
-
         function getNodeIndex(node, absolute) {
             var nodeList = elementParentNode.childNodes;
             var index = indexOf.call(nodeList, node);
@@ -239,17 +222,13 @@
             return index;
         }
 
-        function getNodeByIndex(index, absolute) {
-            var nodeList = elementParentNode.childNodes;
-            if (!absolute) {
-                index = index + elementNodeIndex + 1;
-            }
-            return nodeList[index];
+        function getNodeByIndex(index) {
+           return  elementParentNode.childNodes[index];
         }
 
         ///////////////////////////////////////////////////////////////////////////
 
-        // todo: cleanup (?) nothing is allocated?
+        // todo: destroy items' scopes
         //$scope.$on('$destroy', function () {
         //    console.log('destroy');
         //    console.log($element);
@@ -272,4 +251,4 @@
             };
         });
 
-}(typeof window != 'undefined' ? window : global ));
+}());
