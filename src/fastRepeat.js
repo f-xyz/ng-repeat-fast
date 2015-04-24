@@ -97,7 +97,7 @@
             insertAfter(node, prevNode);
             prevNode = node;
             // store node
-            item.$$hashKey = diff.getUniqueKey();
+            item.$$hashKey = diff.getUniqueId();
             itemHashToNodeMap[item.$$hashKey] = node;
         });
         hideNode(elementNode);
@@ -143,7 +143,7 @@
             difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
                 var node = itemHashToNodeMap[item.$$hashKey];
-                var nodeIndex, swapWithNode;
+                var nodeIndex, swapWithItem, swapWithNode;
 
                 switch (diffEntry.state) {
 
@@ -160,30 +160,20 @@
                             }
                             insertAfter(node, swapWithNode);
                             showNode(node);
-                        }
-                        else {
+                        } else {
                             console.log('CREATED (new)');
                             node = createNode(item, i, difference.length);
                             insertAfter(node, prevNode);
-                            item.$$hashKey = diff.getUniqueKey();
+                            item.$$hashKey = diff.getUniqueId();
                             itemHashToNodeMap[item.$$hashKey] = node;
                         }
                         break;
 
+                    case diff.NOT_MODIFIED:
                     case diff.MOVED:
                         nodeIndex = getNodeIndex(node);
-                        console.log('MOVED', node, nodeIndex, i, diffEntry);
                         swapWithNode = getNodeByIndex(i);
-                        if (i > 0) {
-                            prevItemState = difference[i - 1].state;
-                            if (prevItemState == diff.NOT_MODIFIED) {
-                               swapWithNode = swapWithNode.nextSibling;
-                            }
-                        }
                         insertAfter(node, swapWithNode);
-                        console.log('-> done', swapWithNode);
-
-                        // todo: bug with reverting when number of items is odd
                         break;
 
                     case diff.DELETED:
@@ -206,8 +196,7 @@
         function insertAfter(node, afterNode) {
             if (afterNode.nextSibling) {
                 elementParentNode.insertBefore(node, afterNode.nextSibling);
-            }
-            else {
+            } else {
                 elementParentNode.appendChild(node);
             }
         }
