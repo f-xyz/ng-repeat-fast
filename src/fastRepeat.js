@@ -139,6 +139,7 @@
 
             console.time('dom');
             var prevNode = elementNode; // insert new node after me
+            var prevItemState;
             difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
                 var node = itemHashToNodeMap[item.$$hashKey];
@@ -148,14 +149,20 @@
 
                     case diff.CREATED:
                         if (node) {
+                            console.log('CREATED (existing)', node);
                             nodeIndex = getNodeIndex(node);
-                            if (nodeIndex !== i) {
-                                // mode to index
-                                swapWithNode = getNodeByIndex(i);
-                                elementParentNode.insertBefore(node, swapWithNode);
+                            swapWithNode = getNodeByIndex(i);
+                            if (i > 0) {
+                                prevItemState = difference[i - 1].state;
+                                if (prevItemState == diff.NOT_MODIFIED) {
+                                    swapWithNode = swapWithNode.nextSibling;
+                                }
                             }
+                            insertAfter(node, swapWithNode);
                             showNode(node);
-                        } else {
+                        }
+                        else {
+                            console.log('CREATED (new)');
                             node = createNode(item, i, difference.length);
                             insertAfter(node, prevNode);
                             item.$$hashKey = diff.getUniqueKey();
@@ -165,18 +172,22 @@
 
                     case diff.MOVED:
                         nodeIndex = getNodeIndex(node);
-                        console.log('moved', node, nodeIndex, diffEntry.iList, i);
-                        if (nodeIndex != diffEntry.iList) {
-                            // mode to index
-                            swapWithNode = getNodeByIndex(diffEntry.iList);
-                            elementParentNode.insertBefore(node, swapWithNode);
-                            console.log('-> done', node);
-                        } else {
-                            console.log('-> ...');
+                        console.log('MOVED', node, nodeIndex, i, diffEntry);
+                        swapWithNode = getNodeByIndex(i);
+                        if (i > 0) {
+                            prevItemState = difference[i - 1].state;
+                            if (prevItemState == diff.NOT_MODIFIED) {
+                               swapWithNode = swapWithNode.nextSibling;
+                            }
                         }
+                        insertAfter(node, swapWithNode);
+                        console.log('-> done', swapWithNode);
+
+                        // todo: bug with reverting when number of items is odd
                         break;
 
                     case diff.DELETED:
+                        console.log('DELETED', node);
                         hideNode(node);
                         //deleteNode(node);
                         //delete itemHashToNodeMap[item.$$hashKey];
@@ -195,16 +206,13 @@
         function insertAfter(node, afterNode) {
             if (afterNode.nextSibling) {
                 elementParentNode.insertBefore(node, afterNode.nextSibling);
-            } else {
+            }
+            else {
                 elementParentNode.appendChild(node);
             }
         }
 
         function createNode(item, i, total) {
-            return createNodeWithScope(item, i, total).node;
-        }
-
-        function createNodeWithScope(item, i, total) {
             var itemScope = $scope.$new();
             itemScope[iteratorName] = item;
             itemScope.$index = i;
@@ -217,10 +225,7 @@
             var $clone = $template.clone();
             $compile($clone)(itemScope);
 
-            return {
-                node: $clone[0],
-                scope: itemScope
-            };
+            return $clone[0];
         }
 
         function showNode(node) {

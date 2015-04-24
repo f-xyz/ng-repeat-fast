@@ -5,6 +5,7 @@ Fast-repeat is a much faster implementation
 of Angular directive `ng-repeat`.
 Was build with performance in mind (to be honest - only).
 
+* Based on [list-diff](https://github.com/fantasticMrFox/list-diff).
 * Caches DOM nodes (and eats more memory).
 * Works much faster than `ng-repeat`.
 * Supports *arrays of objects* only.
