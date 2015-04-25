@@ -47,6 +47,7 @@
      * @param {{ fastRepeat: string }} $attrs
      */
     function fastRepeatLink($scope, $element, $attrs, $parse, $compile) {
+        // todo - directive: dont-evaluate-if-out-screen
         // todo - animation support
         // todo - track by
         // todo - garbage collection for DOM nodes (?) timer-based?
@@ -126,13 +127,20 @@
                 return {
                     state: x.state,
                     value: x.item.value,
-                    $$hashKey: x.item.$$hashKey,
-                    iList: x.iList,
-                    iPrev: x.iPrev
+                    oldIndex: x.oldIndex,
+                    newIndex: x.newIndex,
+                    $$hashKey: x.item.$$hashKey
                 };
             }));
 
             console.time('dom');
+            syncDom(difference);
+            console.timeEnd('dom');
+
+            console.timeEnd('renderChanges');
+        }
+
+        function syncDom(difference) {
             var prevNode = elementNode; // insert new node after me
             difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
@@ -149,9 +157,10 @@
                             insertAfter(node, swapWithNode);
                             showNode(node);
                         } else {
+                            // todo: buggy, no tests
                             console.log('CREATED (new)');
                             node = createNode(item, i, difference.length);
-                            insertAfter(node, prevNode);
+                            insertAfter(node, getNodeByIndex(i));
                             item.$$hashKey = diff.getUniqueId();
                             itemHashToNodeMap[item.$$hashKey] = node;
                         }
@@ -173,9 +182,6 @@
 
                 prevNode = node;
             });
-
-            console.timeEnd('dom');
-            console.timeEnd('renderChanges');
         }
 
         // DOM operations /////////////////////////////////////////////////
@@ -211,6 +217,10 @@
 
         function hideNode(node) {
             node.className += ' ng-hide';
+        }
+
+        function deleteNode(node) {
+            elementParentNode.removeChild(node);
         }
 
         function getNodeIndex(node, absolute) {

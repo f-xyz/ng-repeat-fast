@@ -6,6 +6,7 @@
     var $compile, $rootScope;
     var app = angular.module('app', ['fastRepeat']);
     var template = '<div fast-repeat="item in list">{{ ::item.value }}</div>';
+    //var template = '<div ng-repeat="item in list">{{ ::item.value }}</div>';
 
     app.run(function ($templateCache) {
         $templateCache.put('item', template);
@@ -146,42 +147,33 @@
             items.should.eql(itemsBackup);
         });
 
-
         describe('advanced', function () {
 
-            it('reverses list (2 nodes)', function () {
-                $rootScope.list = $rootScope.list.reverse();
-                $rootScope.$digest();
-
-                var items = getItems(container);
-                items.length.should.eq(2);
-
-                items.eq(0).text().should.eq('1');
-                items.eq(1).text().should.eq('0');
-            });
-
-            it('reverses list ([2 to 21] nodes)', function () {
-                for (var step = 2; step <= 7; ++step) {
+            [2, 3, 5, 7].forEach(function (n) {
+                it('reverses list (' + n + ' nodes)', function () {
 
                     $rootScope.list = [];
-                    for (var i = 0; i < step; ++i) {
+                    $rootScope.$digest();
+
+                    for (var i = 0; i < n; ++i) {
                         $rootScope.list.push({ value: i });
                     }
+                    $rootScope.$digest();
 
                     $rootScope.list = $rootScope.list.reverse();
                     $rootScope.$digest();
 
                     var items = getItems(container);
-                    items.length.should.eq(step);
+                    items.length.should.eq(n);
 
                     [].forEach.call(items, function (x, i) {
-                        x.textContent.should.eq(String(step-i-1));
+                        x.textContent.should.eq(String(n-i-1));
                     });
-                }
-            }); // it
+                }); // it
+            }); // forEach
 
-        }); // describe
+        }); // describe 'advanced'
 
-    }); // describe
+    }); // describe 'DOM sync.'
 
 })();
