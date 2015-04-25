@@ -29,13 +29,29 @@
             error: apply(nativeConsole.error),
             time: apply(nativeConsole.time),
             timeEnd: apply(nativeConsole.timeEnd),
-            table: apply(nativeConsole.table),
+            table: nop,//apply(nativeConsole.table),
             get enabled() { return enabled },
             set enabled(value) { enabled = value }
         };
 
     })(window, localStorage.debug);
     //endregion
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    angular
+        .module('fastRepeat', [])
+        .directive('fastRepeat', function ($parse, $compile) {
+            return {
+                scope: true,
+                restrict: 'A',
+                priority: 1000,
+                terminal: true,
+                link: function ($scope, $element, $attrs) {
+                    fastRepeatLink($scope, $element, $attrs, $parse, $compile);
+                }
+            };
+        });
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -82,15 +98,12 @@
         console.time('creating dom');
         var elementNode = $element[0];
         var elementParentNode = elementNode.parentNode;
-        var elementNodeIndex = getNodeIndex(elementNode, true);
-
-        var $template = $element.clone();
-        $template.removeAttr('fast-repeat');
+        var templateNode = $element.clone();
+        templateNode.removeAttr('fast-repeat');
 
         var prevNode = elementNode;
         model.forEach(function (item, i) {
             var node = createNode(item, i, model.length);
-            //
             insertAfter(node, prevNode);
             prevNode = node;
             // store node
@@ -115,6 +128,8 @@
 
         function renderChanges(list, prev) {
             if (list === prev) return;
+
+            // todo: just empty all if list.length == 0
 
             console.time('renderChanges');
 
@@ -145,22 +160,18 @@
             difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
                 var node = itemHashToNodeMap[item.$$hashKey];
-                var nodeIndex, swapWithNode;
 
                 switch (diffEntry.state) {
 
                     case diff.CREATED:
                         if (node) {
                             console.log('CREATED (existing)', node);
-                            nodeIndex = getNodeIndex(node);
-                            swapWithNode = getNodeByIndex(i);
-                            insertAfter(node, swapWithNode);
+                            insertAfter(node, prevNode);
                             showNode(node);
                         } else {
-                            // todo: buggy, no tests
                             console.log('CREATED (new)');
                             node = createNode(item, i, difference.length);
-                            insertAfter(node, getNodeByIndex(i));
+                            insertAfter(node, prevNode);
                             item.$$hashKey = diff.getUniqueId();
                             itemHashToNodeMap[item.$$hashKey] = node;
                         }
@@ -168,9 +179,8 @@
 
                     case diff.MOVED:
                     case diff.NOT_MODIFIED:
-                        nodeIndex = getNodeIndex(node);
-                        swapWithNode = getNodeByIndex(i);
-                        insertAfter(node, swapWithNode);
+                        // todo: don't move node if not necessary
+                        insertAfter(node, prevNode);
                         break;
 
                     case diff.DELETED:
@@ -179,7 +189,6 @@
                         //delete itemHashToNodeMap[item.$$hashKey];
                         break;
                 }
-
                 prevNode = node;
             });
         }
@@ -204,14 +213,13 @@
             itemScope.$even = i % 2 == 0;
             itemScope.$odd = !itemScope.$even;
 
-            var $clone = $template.clone();
+            var $clone = templateNode.clone();
             $compile($clone)(itemScope);
 
             return $clone[0];
         }
 
         function showNode(node) {
-            // todo: is node is visible - do nothing
             node.className = node.className.slice(0, -8);
         }
 
@@ -219,22 +227,9 @@
             node.className += ' ng-hide';
         }
 
-        function deleteNode(node) {
-            elementParentNode.removeChild(node);
-        }
-
-        function getNodeIndex(node, absolute) {
-            var nodeList = elementParentNode.childNodes;
-            var index = indexOf.call(nodeList, node);
-            if (!absolute) {
-                index = index - elementNodeIndex - 1;
-            }
-            return index;
-        }
-
-        function getNodeByIndex(index) {
-           return  elementParentNode.childNodes[index];
-        }
+        //function deleteNode(node) {
+        //    elementParentNode.removeChild(node);
+        //}
 
         ///////////////////////////////////////////////////////////////////////////
 
@@ -244,21 +239,5 @@
         //    console.log($element);
         //});
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-
-    angular
-        .module('fastRepeat', [])
-        .directive('fastRepeat', function ($parse, $compile) {
-            return {
-                scope: true,
-                restrict: 'A',
-                priority: 1000,
-                terminal: true,
-                link: function ($scope, $element, $attrs) {
-                    fastRepeatLink($scope, $element, $attrs, $parse, $compile);
-                }
-            };
-        });
 
 }());

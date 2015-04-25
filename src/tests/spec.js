@@ -18,8 +18,7 @@
     function createElement() {
         var element = $compile(template)($rootScope);
         $rootScope.$digest();
-
-        return $(element[0].parentNode);
+        return $(element[0].parentNode); // documentFragment
     }
 
     /**
@@ -46,6 +45,12 @@
         container = createElement();
     });
 
+    describe('qqq', function () {
+        it('www', function () {
+
+        });
+    });
+
     describe('initialization', function () {
 
         it('throws if ng-include is set on repeated element', function () {
@@ -69,6 +74,9 @@
             });
         });
 
+        xit('parses "track by expression"', function () {
+        });
+
         it('throws if expression is invalid', function () {
             var template = '<div fast-repeat="!@#"></div>';
             var action = function () {
@@ -88,6 +96,8 @@
             });
         });
 
+        xit('understand one-time binding ::', function () {
+        });
     });
 
     describe('DOM sync.', function () {
@@ -147,10 +157,10 @@
             items.should.eql(itemsBackup);
         });
 
-        describe('advanced', function () {
+        describe('advanced and bugs', function () {
 
-            [2, 3, 5, 7].forEach(function (n) {
-                it('reverses list (' + n + ' nodes)', function () {
+            [2, 3].forEach(function (n) {
+                it('reverses list of ' + n + ' nodes', function () {
 
                     $rootScope.list = [];
                     $rootScope.$digest();
@@ -172,8 +182,20 @@
                 }); // it
             }); // forEach
 
+            it('does not affect siblings', function () {
+                //
+            });
+
         }); // describe 'advanced'
 
     }); // describe 'DOM sync.'
+
+    describe('performance compared to ng-repeat', function () {
+
+        it('performance compared to ng-repeat', function () {
+
+        });
+
+    });
 
 })();
