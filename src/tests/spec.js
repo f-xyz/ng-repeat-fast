@@ -185,20 +185,6 @@
             items.eq(2).text().should.eq('2');
         });
 
-        it('reuses nodes after deletion and recreation', function () {
-            var listBackup = $rootScope.list;
-            var itemsBackup = getItems(container);
-
-            $rootScope.list = [];
-            $rootScope.$digest();
-
-            $rootScope.list = listBackup;
-            $rootScope.$digest();
-
-            var items = getItems(container);
-            items.should.eql(itemsBackup);
-        });
-
         [2, 3, 7].forEach(function (n) {
             it('reverses list of ' + n + ' nodes', function () {
 
@@ -223,13 +209,29 @@
 
         xit('does not affect siblings', function () {
             var template =
-                '<div fast-repeat="item in list track by \'value\'">' +
-                    '{{ ::item.value }}' +
-                '</div>';
+                '<span>-----</span>' +
+                    '<div fast-repeat="item in list">' +
+                        '{{ ::item.value }}' +
+                    '</div>' +
+                '<span>-----</span>';
             container = createElement(template);
         });
 
-        it('reuses hidden node', function () {
+        it('reuses nodes after deletion and recreation', function () {
+            var listBackup = $rootScope.list;
+            var itemsBackup = getItems(container);
+
+            $rootScope.list = [];
+            $rootScope.$digest();
+
+            $rootScope.list = listBackup;
+            $rootScope.$digest();
+
+            var items = getItems(container);
+            items.should.eql(itemsBackup);
+        });
+
+        xit('reuses hidden node', function () {
 
         });
 

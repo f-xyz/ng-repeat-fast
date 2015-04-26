@@ -101,12 +101,12 @@
         var elementNode = $element[0];
         var elementParentNode = elementNode.parentNode;
         var elementNodeIndex = getNodeIndex(elementNode, true);
-        var templateNode = $element.clone();
-        templateNode.removeAttr('fast-repeat');
+        var templateNode = elementNode.cloneNode(true);
+        templateNode.removeAttribute('fast-repeat');
 
         var prevNode = elementNode;
-        model.forEach(function (item, i) {
-            var node = createNode(item, i, model.length);
+        model.forEach(function (item) {
+            var node = createNode(item);
             insertAfter(node, prevNode);
             prevNode = node;
             // store node
@@ -176,7 +176,7 @@
                             showNode(node);
                         } else {
                             //console.log('CREATED (new)');
-                            node = createNode(item, i, difference.length);
+                            node = createNode(item);
                             insertAfter(node, prevNode);
                             var hashKey = diff.getUniqueId();
                             item[trackBy] = hashKey;
@@ -212,65 +212,56 @@
             }
         }
 
-        function createNode(item, index, total) {
+        function createNode(item) {
             var scope = $scope.$new();
             scope[iteratorName] = item;
 
-            var clone = templateNode.clone();
-            $compile(clone)(scope);
+            var node = templateNode.cloneNode(true);
 
-            var node = clone[0];
-
-            createScope(scope, node, index, total);
+            amendItemScope(scope, node);
+            $compile(node)(scope);
 
             return node;
         }
 
-        function createScope(scope, node, index, total) {
-            //scope.$last = index === total - 1;
-            //scope.$middle = !scope.$first && !scope.$last;
-            //scope.$odd = !(scope.$even = (index&1) === 0);
-            Object.defineProperty(scope, '$index', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return getNodeIndex(node);
-                }
-            });
-            Object.defineProperty(scope, '$first', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return getNodeIndex(node) === 0;
-                }
-            });
-            Object.defineProperty(scope, '$last', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    var length = getModel().length;
-                    return getNodeIndex(node) === length-1;
-                }
-            });
-            Object.defineProperty(scope, '$middle', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return !this.$first && !this.$last;
-                }
-            });
-            Object.defineProperty(scope, '$even', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return this.$index % 2 == 0;
-                }
-            });
-            Object.defineProperty(scope, '$odd', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return this.$index % 2 == 1;
+        function amendItemScope(scope, node) {
+            Object.defineProperties(scope, {
+                $index: {
+                    enumerable: true,
+                    get: function () {
+                        return getNodeIndex(node);
+                    }
+                },
+                $first: {
+                    enumerable: true,
+                    get: function () {
+                        return getNodeIndex(node) === 0;
+                    }
+                },
+                $last: {
+                    enumerable: true,
+                    get: function () {
+                        var length = getModel().length;
+                        return getNodeIndex(node) === length-1;
+                    }
+                },
+                $middle: {
+                    enumerable: true,
+                    get: function () {
+                        return !this.$first && !this.$last;
+                    }
+                },
+                $even: {
+                    enumerable: true,
+                    get: function () {
+                        return this.$index % 2 == 0;
+                    }
+                },
+                $odd: {
+                    enumerable: true,
+                    get: function () {
+                        return this.$index % 2 == 1;
+                    }
                 }
             });
             return scope;
