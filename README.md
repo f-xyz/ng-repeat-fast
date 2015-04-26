@@ -16,8 +16,8 @@ Was build with performance in mind (to be honest, only).
 * Does not support ng-include on the repeated element.
     * Use nested `<div ng-include='...'></div>`. Make it automatic?
 * `track by` - supported.
-    * Except track by $index, use real fields.
-* Animations. - *in progress*
+    * Except track by $index. - *planned*
+* Animations. - *planned*
     
 ## Basic Usage
 ```html
