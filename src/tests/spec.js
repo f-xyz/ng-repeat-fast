@@ -57,7 +57,7 @@
             });
         });
 
-        it('parses "track by expression"', function () {
+        it('parses `track by` expression', function () {
             $rootScope.list = [{ value: 0 }, { value: 1 }];
             var template =
                 '<div fast-repeat="item in list track by value">' +

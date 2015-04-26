@@ -3,38 +3,6 @@
 
     var indexOf = [].indexOf;
 
-    //region createConsole
-    /* istanbul ignore next */
-    var console = (function createConsole(global, enabled) {
-
-        var nativeConsole = global.console;
-        var nop = function () {};
-
-        function apply(fn) {
-            if (enabled && fn) {
-                return function () {
-                    fn.apply(nativeConsole, arguments);
-                }
-            } else {
-                return nop;
-            }
-        }
-
-        return {
-            log: apply(nativeConsole.log),
-            info: apply(nativeConsole.info),
-            warn: apply(nativeConsole.warn),
-            error: apply(nativeConsole.error),
-            time: apply(nativeConsole.time),
-            timeEnd: apply(nativeConsole.timeEnd),
-            table: apply(nativeConsole.table),
-            get enabled() { return enabled },
-            set enabled(value) { enabled = value }
-        };
-
-    })(window, true);
-    //endregion
-
     ///////////////////////////////////////////////////////////////////////////
 
     angular
@@ -97,7 +65,6 @@
 
         var itemHashToNodeMap = {};
 
-        console.time('creating dom');
         var elementNode = $element[0];
         var elementParentNode = elementNode.parentNode;
         var elementNodeIndex = getNodeIndex(elementNode, true);
@@ -117,8 +84,6 @@
         });
         hideNode(elementNode);
 
-        console.timeEnd('creating dom');
-
         // watch model for changes if
         // it is not one-time binding
         var unwatchModel;
@@ -135,27 +100,9 @@
         function renderChanges(list, prev) {
             if (list === prev) return;
 
-            // todo: just empty all if list.length == 0
-
-            console.time('renderChanges');
-
-            console.time('diff');
             var difference = diff(list, prev, trackBy);
-            console.timeEnd('diff');
-            console.table(difference.map(function (x) {
-                return {
-                    state: x.state,
-                    value: x.item.value,
-                    oldIndex: x.oldIndex,
-                    newIndex: x.newIndex
-                };
-            }));
 
-            console.time('dom');
             syncDom(difference);
-            console.timeEnd('dom');
-
-            console.timeEnd('renderChanges');
         }
 
         function syncDom(difference) {
