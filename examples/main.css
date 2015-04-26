@@ -1,3 +1,7 @@
+[class^=col-] {
+  margin: 0 !important;
+  padding: 0 !important;
+}
 body {
   margin: 20px;
   background-color: #262626;
@@ -6,6 +10,7 @@ body {
   letter-spacing: .1px;
   text-rendering: optimizeLegibility;
   box-sizing: border-box;
+  overflow-y: scroll;
 }
 .container {
   position: absolute;
@@ -18,7 +23,7 @@ body {
   opacity: 0;
   transition: .5s;
 }
-.container.on {
+.on .container {
   opacity: 1;
 }
 h1 {
@@ -29,7 +34,7 @@ section {
   width: 100%;
   margin: 0 0 20px;
   text-align: center;
-  letter-spacing: 20px;
+  letter-spacing: 10px;
 }
 section > * {
   letter-spacing: .1px;
@@ -223,19 +228,31 @@ section > * {
 }
 button {
   position: relative;
-  padding: 20px;
+  margin: 0 0 0 0;
+  padding: 10px 20px;
   border: 1px solid #70a7c2;
   border-radius: 2px;
   background-color: rgba(112, 167, 194, 0.15);
-  letter-spacing: .1px;
   transition: .4s;
   outline: none;
 }
+button.big {
+  padding: 20px;
+}
+button .glyphicon {
+  font-size: 10px;
+  top: -2px;
+}
 button:hover {
   box-shadow: 0 0 10px #70a7c2;
-  -webkit-animation: rotation-y2 2.4s ease, rotation 2.4s ease;
-  -moz-animation: rotation-y2 2.4s ease, rotation 2.4s ease;
-  animation: rotation-y2 2.4s ease, rotation 2.4s ease;
+  -webkit-animation: rotation-y2 2.4s ease, opacity 2.4s ease;
+  -moz-animation: rotation-y2 2.4s ease, opacity 2.4s ease;
+  animation: rotation-y2 2.4s ease, opacity 2.4s ease;
+  background-color: rgba(112, 167, 194, 0.3);
+  -webkit-transform: scale(1.3);
+  -ms-transform: scale(1.3);
+  -o-transform: scale(1.3);
+  transform: scale(1.3);
 }
 button.active,
 button:active {
@@ -251,7 +268,7 @@ button:active {
 }
 input[type=search] {
   width: 100%;
-  margin: 0 0 20px;
+  margin: 0;
   padding: 20px;
   border-radius: 2px;
   border: 1px solid #70a7c2;

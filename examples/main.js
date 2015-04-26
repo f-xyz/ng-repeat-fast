@@ -3,7 +3,7 @@ app.config(function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);
 });
 app.run(function () {
-   document.querySelector('.container').className += ' on';
+   document.body.className += ' on';
 });
 app.controller('main', function ($scope) {
     var N = 3;

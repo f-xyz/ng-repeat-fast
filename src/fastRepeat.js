@@ -34,7 +34,7 @@
             set enabled(value) { enabled = value }
         };
 
-    })(window, localStorage.debug);
+    })(window, true || localStorage.debug);
     //endregion
 
     ///////////////////////////////////////////////////////////////////////////
@@ -76,18 +76,20 @@
 
         // parse ng-repeat expression /////////////////////////////////////////
 
-        var match = $attrs.fastRepeat.match(/^\s*(\w+)\sin\s(.+)/);
+        var rx = /^\s*(\w+)\sin\s(.+?)(\strack by\s(.+?))?$/;
+        var match = $attrs.fastRepeat.match(rx);
         if (!match) {
             throw Error('fastRepeat: expected fastRepeat in form of ' +
-                        '`{item} in {array} [| filter, etc]` ' +
+                        '`{item} in {array} [| filter, etc]` [track by \'{field}\'] ' +
                         'but got `' + $attrs.fastRepeat + '`');
         }
 
         var iteratorName = match[1];
         var expression = match[2];
+        var trackBy = match[4] || '$$hashKey';
         var model = getModel();
         if (!Array.isArray(model)) {
-            throw Error('fastRepeat: expected `' + $attrs.fastRepeat + '` ' +
+            throw Error('fastRepeat: expected model `' + $attrs.fastRepeat + '` ' +
                         'to be an array but got: ' + String(model));
         }
 
@@ -98,6 +100,7 @@
         console.time('creating dom');
         var elementNode = $element[0];
         var elementParentNode = elementNode.parentNode;
+        var elementNodeIndex = getNodeIndex(elementNode, true);
         var templateNode = $element.clone();
         templateNode.removeAttr('fast-repeat');
 
@@ -107,8 +110,9 @@
             insertAfter(node, prevNode);
             prevNode = node;
             // store node
-            item.$$hashKey = diff.getUniqueId();
-            itemHashToNodeMap[item.$$hashKey] = node;
+            var hashKey = diff.getUniqueId();
+            item[trackBy] = hashKey;
+            itemHashToNodeMap[hashKey] = node;
         });
         hideNode(elementNode);
 
@@ -116,8 +120,9 @@
 
         // watch model for changes if
         // it is not one-time binding
+        var unwatchModel;
         if (!/^::/.test(expression)) {
-            $scope.$watchCollection(getModel, renderChanges);
+            unwatchModel = $scope.$watchCollection(getModel, renderChanges);
         }
 
         ///////////////////////////////////////////////////////////////////
@@ -134,17 +139,14 @@
             console.time('renderChanges');
 
             console.time('diff');
-            var difference = diff(list, prev, '$$hashKey');
+            var difference = diff(list, prev, trackBy);
             console.timeEnd('diff');
             console.table(difference.map(function (x) {
-                x.value = x.item.value;
-                x.$$hashKey = x.item.$$hashKey;
                 return {
                     state: x.state,
                     value: x.item.value,
                     oldIndex: x.oldIndex,
-                    newIndex: x.newIndex,
-                    $$hashKey: x.item.$$hashKey
+                    newIndex: x.newIndex
                 };
             }));
 
@@ -159,34 +161,41 @@
             var prevNode = elementNode; // insert new node after me
             difference.forEach(function (diffEntry, i) {
                 var item = diffEntry.item;
-                var node = itemHashToNodeMap[item.$$hashKey];
+                var node = itemHashToNodeMap[item[trackBy]];
+                var nodeIndex;
 
                 switch (diffEntry.state) {
 
                     case diff.CREATED:
                         if (node) {
-                            console.log('CREATED (existing)', node);
-                            insertAfter(node, prevNode);
+                            //console.log('CREATED (existing)', node);
+                            nodeIndex = getNodeIndex(node);
+                            if (nodeIndex != i) {
+                                insertAfter(node, prevNode);
+                            }
                             showNode(node);
                         } else {
-                            console.log('CREATED (new)');
+                            //console.log('CREATED (new)');
                             node = createNode(item, i, difference.length);
                             insertAfter(node, prevNode);
-                            item.$$hashKey = diff.getUniqueId();
-                            itemHashToNodeMap[item.$$hashKey] = node;
+                            var hashKey = diff.getUniqueId();
+                            item[trackBy] = hashKey;
+                            itemHashToNodeMap[hashKey] = node;
                         }
                         break;
 
                     case diff.MOVED:
                     case diff.NOT_MODIFIED:
-                        // todo: don't move node if not necessary
-                        insertAfter(node, prevNode);
+                        nodeIndex = getNodeIndex(node);
+                        if (nodeIndex != i) {
+                            insertAfter(node, prevNode);
+                        }
                         break;
 
                     case diff.DELETED:
                         hideNode(node);
                         //deleteNode(node);
-                        //delete itemHashToNodeMap[item.$$hashKey];
+                        //delete itemHashToNodeMap[item[trackBy]];
                         break;
                 }
                 prevNode = node;
@@ -203,20 +212,68 @@
             }
         }
 
-        function createNode(item, i, total) {
-            var itemScope = $scope.$new();
-            itemScope[iteratorName] = item;
-            itemScope.$index = i;
-            itemScope.$first = i == 0;
-            itemScope.$last = i == total - 1;
-            itemScope.$middle = !itemScope.$first && !itemScope.$last;
-            itemScope.$even = i % 2 == 0;
-            itemScope.$odd = !itemScope.$even;
+        function createNode(item, index, total) {
+            var scope = $scope.$new();
+            scope[iteratorName] = item;
 
-            var $clone = templateNode.clone();
-            $compile($clone)(itemScope);
+            var clone = templateNode.clone();
+            $compile(clone)(scope);
 
-            return $clone[0];
+            var node = clone[0];
+
+            createScope(scope, node, index, total);
+
+            return node;
+        }
+
+        function createScope(scope, node, index, total) {
+            //scope.$last = index === total - 1;
+            //scope.$middle = !scope.$first && !scope.$last;
+            //scope.$odd = !(scope.$even = (index&1) === 0);
+            Object.defineProperty(scope, '$index', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return getNodeIndex(node);
+                }
+            });
+            Object.defineProperty(scope, '$first', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return getNodeIndex(node) === 0;
+                }
+            });
+            Object.defineProperty(scope, '$last', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    var length = getModel().length;
+                    return getNodeIndex(node) === length-1;
+                }
+            });
+            Object.defineProperty(scope, '$middle', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return !this.$first && !this.$last;
+                }
+            });
+            Object.defineProperty(scope, '$even', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return this.$index % 2 == 0;
+                }
+            });
+            Object.defineProperty(scope, '$odd', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return this.$index % 2 == 1;
+                }
+            });
+            return scope;
         }
 
         function showNode(node) {
@@ -227,17 +284,21 @@
             node.className += ' ng-hide';
         }
 
-        //function deleteNode(node) {
-        //    elementParentNode.removeChild(node);
-        //}
+        function getNodeIndex(node, absolute) {
+            var nodeList = elementParentNode.childNodes;
+            var index = indexOf.call(nodeList, node);
+            if (!absolute) {
+                index = index - elementNodeIndex - 1;
+            }
+            return index;
+        }
 
         ///////////////////////////////////////////////////////////////////////////
 
-        // todo: destroy items' scopes
-        //$scope.$on('$destroy', function () {
-        //    console.log('destroy');
-        //    console.log($element);
-        //});
+        $scope.$on('$destroy', function () {
+            console.log('destroy');
+            unwatchModel();
+        });
     }
 
 }());

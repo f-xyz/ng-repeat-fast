@@ -17,53 +17,74 @@
                     {{ char }}
                 </span>
             </h1>
-        </section>
+        </section>-->
 
-        <br>-->
-
-        <section>
-            <button ng-click="toggleFastRepeat()"
-                    style="min-width: 140px;"
-                    ng-class="{ 'active': useFastRepeat }"
-                    title="Use fast-repeat instead of ng-repeat?">
-                {{ useFastRepeat ? 'fastRepeat' : 'ngRepeat' }}
-            </button>
-            <button ng-click="addToBegin()">Add 1st</button>
-            <button ng-click="add2nd()">Add 2nd</button>
-            <button ng-click="addToEnd()">Add last</button>
-        </section>
-
-        <div class="row">
-            <div class="col-xs-5">
+        <section class="row">
+            <div class="col-xs-7">
                 <input type="search" ng-model="search" autofocus>
             </div>
-            <div class="col-xs-2 text-right">
-                <button ng-click="reverse()">Rev.</button>
+            <div class="col-xs-1"></div>
+            <div class="col-xs-4 text-right">
+                <button ng-click="toggleFastRepeat()"
+                        class="big"
+                        style="width: 100%;"
+                        ng-class="{ 'active': useFastRepeat }"
+                        title="Use fast-repeat instead of ng-repeat?">
+                    {{ useFastRepeat ? 'fastRepeat' : 'ngRepeat' }}
+                </button>
             </div>
-            <div class="col-xs-3 text-right">
-                <button ng-click="swap()">1 <=> 2</button>
-            </div>
-            <div class="col-xs-2 text-right">
-                <button ng-click="list = []">CLR</button>
-            </div>
-        </div>
+        </section>
 
-        <div class="list" ng-if="!useFastRepeat">
-            <div class="list-item"
-                 ng-repeat="item in list | filter: search"
-                 ng-include="'item-template'">
+        <section class="row">
+            <div class="col-xs-10 text-left">
+                <button ng-click="addToBegin()">
+                    <span class="glyphicon glyphicon-plus"></span> 1st
+                </button>
+                <button ng-click="add2nd()">
+                    <span class="glyphicon glyphicon-plus"></span> 2nd
+                </button>
+                <button ng-click="addToEnd()">
+                    <span class="glyphicon glyphicon-plus"></span> last
+                </button>
+                <button ng-click="reverse()">
+                    <span class="glyphicon glyphicon-sort"
+                          style="font-size: 16px; top: 2px;"></span>
+                </button>
+                <button ng-click="swap()">
+                    1 <span class="glyphicon glyphicon-retweet"></span> 2
+                </button>
             </div>
-        </div>
+            <div class="col-xs-2 text-right">
+                <button ng-click="list = []">
+                    <span class="glyphicon glyphicon-remove"
+                          style="font-size: 16px; top: 2px;"></span>
+                </button>
+            </div>
+        </section>
 
-        <!--ng-include="'item-template'">-->
-        <div class="list" ng-if="useFastRepeat">
-            <div class="placeholder">------</div>
-            <div class="list-item"
-                 fast-repeat="item in list | filter: search">
-                <span ng-include="'item-template'"></span>
+        <section class="row">
+            <div class="col-xs-12">
+
+                <div class="list" ng-if="!useFastRepeat">
+                    <div class="list-item"
+                         ng-repeat="item in list | filter: search"
+                         ng-include="'item-template'">
+                    </div>
+                </div>
+
+                <!--ng-include="'item-template'">-->
+                <div class="list" ng-if="useFastRepeat">
+                    <div class="placeholder">------</div>
+                    <div class="list-item"
+                         fast-repeat="item in list | filter: search">
+                        <span ng-include="'item-template'"></span>
+                    </div>
+                    <div class="placeholder">------</div>
+                </div>
+
             </div>
-            <div class="placeholder">------</div>
-        </div>
+        </section>
+
     </div>
 
     <script src="../bower_components/angular/angular.js"></script>
