@@ -1,26 +1,23 @@
-# fast-repeat v.0.1.0-alpha
+# fast-repeat v.1.0.23
 [![Build Status](https://travis-ci.org/fantasticMrFox/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/fantasticMrFox/ng-repeat-fast)
 
-Fast-repeat is a much faster implementation 
+Fast-repeat is a faster implementation 
 of Angular directive `ng-repeat`.
-Was build with performance in mind (to be honest - only).
+Was build with performance in mind (to be honest, only).
 
-* Based on [list-diff](https://github.com/fantasticMrFox/list-diff).
-* Caches DOM nodes (and eats more memory).
+* Uses [list-diff](https://github.com/fantasticMrFox/list-diff) for list comparison.
+* Caches DOM nodes.
 * Works much faster than `ng-repeat`.
-* Supports *arrays of objects* only.
-    * Don't use arrays of primitive values.
-    * Don't use objects as model.
-* Adds `$$hashKey` field into every model's item.
-    * However `$$hashKey` is ignored by `angular.toJson()`.
+* Supports *arrays of objects* only. So:
+    * no arrays of primitive values.
+    * no objects as model.
 * Does not create comment nodes.
 * Does not support ng-repeat-start & ng-repeat-end.
-* Does not support ng-include.
-    * Workaround: use inner `<div ng-include='...'></div>`.
-        * Make it automatic?
-* Animations. - *planned*
-* `track by` expressions. - *planned*
-* ...
+* Does not support ng-include on the repeated element.
+    * Use nested `<div ng-include='...'></div>`. Make it automatic?
+* `track by` - supported.
+    * Except track by $index, use real fields.
+* Animations. - *in progress*
     
 ## Basic Usage
 ```html
