@@ -1,8 +1,6 @@
 (function fastRepeatMain() {
     'use strict';
 
-    // todo: make bower package
-
     var indexOf = [].indexOf;
 
     //region createConsole
@@ -29,12 +27,12 @@
             error: apply(nativeConsole.error),
             time: apply(nativeConsole.time),
             timeEnd: apply(nativeConsole.timeEnd),
-            table: nop,//apply(nativeConsole.table),
+            table: apply(nativeConsole.table),
             get enabled() { return enabled },
             set enabled(value) { enabled = value }
         };
 
-    })(window, true || localStorage.debug);
+    })(window, true);
     //endregion
 
     ///////////////////////////////////////////////////////////////////////////
@@ -68,6 +66,8 @@
         // todo - track by
         // todo - garbage collection for DOM nodes (?) timer-based?
 
+        var HASH_KEY = '$$hashKey';
+
         if ('ngInclude' in $attrs) {
             throw Error('fastRepeat: ngInclude on repeated ' +
                         'element is not supported. ' +
@@ -86,7 +86,7 @@
 
         var iteratorName = match[1];
         var expression = match[2];
-        var trackBy = match[4] || '$$hashKey';
+        var trackBy = match[4] || HASH_KEY;
         var model = getModel();
         if (!Array.isArray(model)) {
             throw Error('fastRepeat: expected model `' + $attrs.fastRepeat + '` ' +
@@ -110,9 +110,10 @@
             insertAfter(node, prevNode);
             prevNode = node;
             // store node
-            var hashKey = diff.getUniqueId();
-            item[trackBy] = hashKey;
-            itemHashToNodeMap[hashKey] = node;
+            if (trackBy === HASH_KEY) {
+                item[trackBy] = diff.getUniqueId();
+            }
+            itemHashToNodeMap[item[trackBy]] = node;
         });
         hideNode(elementNode);
 
@@ -168,14 +169,12 @@
 
                     case diff.CREATED:
                         if (node) {
-                            //console.log('CREATED (existing)', node);
                             nodeIndex = getNodeIndex(node);
                             if (nodeIndex != i) {
                                 insertAfter(node, prevNode);
                             }
                             showNode(node);
                         } else {
-                            //console.log('CREATED (new)');
                             node = createNode(item);
                             insertAfter(node, prevNode);
                             var hashKey = diff.getUniqueId();
@@ -254,13 +253,13 @@
                 $even: {
                     enumerable: true,
                     get: function () {
-                        return this.$index % 2 == 0;
+                        return this.$index % 2 === 0;
                     }
                 },
                 $odd: {
                     enumerable: true,
                     get: function () {
-                        return this.$index % 2 == 1;
+                        return this.$index % 2 === 1;
                     }
                 }
             });
@@ -287,7 +286,6 @@
         ///////////////////////////////////////////////////////////////////////////
 
         $scope.$on('$destroy', function () {
-            console.log('destroy');
             unwatchModel();
         });
     }

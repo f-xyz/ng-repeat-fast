@@ -34,45 +34,23 @@
         }
     }
 
-    function dumpScope($scope) {
-        var res = {};
-        for (var key in $scope) {
-            if (key[0] != '$'
-            || ['$index', '$first', '$last', '$middle', '$odd', '$even']
-                    .indexOf(key) != -1)
-                res[key] = $scope[key];
-        }
-        return res;
-    }
-
-    var container;
     beforeEach(function () {
         module('app');
         inject(function ($injector) {
             $compile = $injector.get('$compile', '');
             $rootScope = $injector.get('$rootScope', '');
         });
-        $rootScope.list = [{ value: 0 }, { value: 1 }];
-        container = createElement();
     });
 
-    describe('initialization', function () {
-
-        it('throws if ng-include is set on repeated element', function () {
-            $rootScope.list = [];
-            var template = '<div fast-repeat="list" ng-include></div>';
-            var action = function () {
-                $compile(template)($rootScope);
-            };
-            action.should.throw();
-        });
+    describe('common tests', function () {
 
         it('parses ng-repeat expression', function () {
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
             var templates = [
                 '<div fast-repeat="item in list"></div>',
                 '<div fast-repeat="item in list | filter: 1"></div>',
-                '<div fast-repeat="item in ::list"></div>'//,
-                //'<div fast-repeat="item in ::list track by value"></div>'
+                '<div fast-repeat="item in ::list"></div>',
+                '<div fast-repeat="item in ::list track by value"></div>'
             ];
             templates.forEach(function (template) {
                 $compile(template)($rootScope);
@@ -80,15 +58,15 @@
         });
 
         it('parses "track by expression"', function () {
-
-            var oneTimeTemplate =
-                '<div fast-repeat="item in list track by x">' +
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
+            var template =
+                '<div fast-repeat="item in list track by value">' +
                     '{{ ::item.value }}' +
                 '</div>';
-            container = createElement(oneTimeTemplate);
+            var container = createElement(template);
 
             $rootScope.list.forEach(function (x) {
-                x.should.have.property('x');
+                x.should.not.have.property('$$hashKey');
             });
 
             var items = getItems(container);
@@ -99,6 +77,15 @@
 
         it('throws if expression is invalid', function () {
             var template = '<div fast-repeat="!@#"></div>';
+            var action = function () {
+                $compile(template)($rootScope);
+            };
+            action.should.throw();
+        });
+
+        it('throws if ng-include is set on repeated element', function () {
+            $rootScope.list = [];
+            var template = '<div fast-repeat="list" ng-include></div>';
             var action = function () {
                 $compile(template)($rootScope);
             };
@@ -117,24 +104,49 @@
         });
 
         it('understands one-time binding ::', function () {
-            var oneTimeTemplate =
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
+            var template =
                 '<div fast-repeat="item in ::list">' +
                     '{{ ::item.value }}' +
                 '</div>';
-            container = createElement(oneTimeTemplate);
+            var container = createElement(template);
 
             $rootScope.list.push({ value: 2 });
+            $rootScope.$digest();
 
             var items = getItems(container);
             items.length.should.eq(2);
             items.eq(0).text().should.eq('0');
             items.eq(1).text().should.eq('1');
         });
+
+        it('removes watchers when destroyed', function () {
+            var unwatchCalledTimes = 0;
+
+            var watchCollection = $rootScope.$watchCollection;
+            $rootScope.$watchCollection = function () {
+                var unwatch = watchCollection.apply($rootScope, arguments);
+                return function () {
+                    ++unwatchCalledTimes;
+                    unwatch();
+                };
+            };
+
+            $rootScope.list = [];
+            createElement();
+
+            $rootScope.$destroy();
+
+            unwatchCalledTimes.should.eq(1);
+        });
     });
 
     describe('DOM sync.', function () {
 
         it('creates nodes', function () {
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
+            var container = createElement();
+
             $rootScope.list.push({ value: 2 });
             $rootScope.$digest();
 
@@ -156,6 +168,9 @@
         });
 
         it('removes nodes', function () {
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
+            var container = createElement();
+
             $rootScope.list = [];
             $rootScope.$digest();
 
@@ -164,6 +179,9 @@
         });
 
         it('adds node to the begin', function () {
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
+            var container = createElement();
+
             $rootScope.list.unshift({ value: -1 });
             $rootScope.$apply();
 
@@ -175,6 +193,9 @@
         });
 
         it('adds node to the end', function () {
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
+            var container = createElement();
+
             $rootScope.list.push({ value: 2 });
             $rootScope.$digest();
 
@@ -187,6 +208,8 @@
 
         [2, 3, 7].forEach(function (n) {
             it('reverses list of ' + n + ' nodes', function () {
+                $rootScope.list = [{ value: 0 }, { value: 1 }];
+                var container = createElement();
 
                 $rootScope.list = [];
                 $rootScope.$digest();
@@ -207,17 +230,32 @@
             }); // it
         }); // forEach
 
-        xit('does not affect siblings', function () {
+        it('does not affect sibling nodes', function () {
+            $rootScope.list = [];
             var template =
                 '<span>-----</span>' +
                     '<div fast-repeat="item in list">' +
                         '{{ ::item.value }}' +
                     '</div>' +
-                '<span>-----</span>';
-            container = createElement(template);
+                '<span>+++++</span>';
+            var container = createElement(template);
+
+            $rootScope.list.push({ value: 0 });
+            $rootScope.list.push({ value: 1 });
+            $rootScope.$digest();
+
+            var items = getItems(container);
+            items.length.should.eq(4);
+            items.eq(0).text().should.eq('-----');
+            items.eq(1).text().should.eq('0');
+            items.eq(2).text().should.eq('1');
+            items.eq(3).text().should.eq('+++++');
         });
 
         it('reuses nodes after deletion and recreation', function () {
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
+            var container = createElement();
+
             var listBackup = $rootScope.list;
             var itemsBackup = getItems(container);
 
@@ -231,8 +269,24 @@
             items.should.eql(itemsBackup);
         });
 
-        xit('reuses hidden node', function () {
+        it('corrects node indexes if they added again', function () {
+            $rootScope.list = [{ value: 0 }, { value: 1 }];
+            var template =
+                '<div fast-repeat="item in list track by value">' +
+                    '{{ ::item.value }}' +
+                '</div>';
+            var container = createElement(template);
 
+            $rootScope.list = [];
+            $rootScope.$digest();
+
+            $rootScope.list = [{ value: 1 }, { value: 0 }];
+            $rootScope.$digest();
+
+            var items = getItems(container);
+            items.length.should.eq(2);
+            items.eq(0).text().should.eq('1');
+            items.eq(1).text().should.eq('0');
         });
 
     }); // describe 'DOM sync.'
