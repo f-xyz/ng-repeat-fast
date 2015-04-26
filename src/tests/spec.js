@@ -143,11 +143,9 @@
             items.eq(0).text().should.eq('0');
             items.eq(1).text().should.eq('1');
             items.eq(2).text().should.eq('2');
+
             [].some.call(items, function (x, i) {
                 var scope = $(x).scope();
-                console.log(i, scope.$first, scope.$middle, scope.$last);
-                console.log('', scope.$odd, scope.$even, scope.$index);
-                //console.log(dumpScope(scope), i);
                 scope.$index.should.eq(i);
                 scope.$first.should.eq(i == 0);
                 scope.$last.should.eq(i == 2);
@@ -155,8 +153,6 @@
                 scope.$even.should.eq(i % 2 == 0);
                 scope.$odd.should.eq(i % 2 == 1);
             });
-
-            // todo: check items' $scope for $first, $last, etc.
         });
 
         it('removes nodes', function () {
