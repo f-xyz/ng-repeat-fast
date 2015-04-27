@@ -176,38 +176,45 @@
                     enumerable: true,
                     get: function () {
                         return getNodeIndex(node);
-                    }
+                    },
+                    set: function () {}
                 },
                 $first: {
                     enumerable: true,
                     get: function () {
                         return getNodeIndex(node) === 0;
-                    }
+                    },
+                    set: function () {}
                 },
                 $last: {
                     enumerable: true,
                     get: function () {
                         var length = getModel().length;
                         return getNodeIndex(node) === length-1;
-                    }
+                    },
+                    set: function () {}
                 },
                 $middle: {
                     enumerable: true,
                     get: function () {
                         return !this.$first && !this.$last;
-                    }
+                    },
+                    set: function () {}
                 },
                 $even: {
                     enumerable: true,
                     get: function () {
                         return this.$index % 2 === 0;
+                    },
+                    set: function () {
                     }
                 },
                 $odd: {
                     enumerable: true,
                     get: function () {
                         return this.$index % 2 === 1;
-                    }
+                    },
+                    set: function () {}
                 }
             });
             return scope;
