@@ -31,7 +31,6 @@
     function fastRepeatLink($scope, $element, $attrs, $parse, $compile) {
         // todo - directive: dont-evaluate-if-out-screen
         // todo - animation support
-        // todo - track by
         // todo - garbage collection for DOM nodes (?) timer-based?
 
         var HASH_KEY = '$$hashKey';

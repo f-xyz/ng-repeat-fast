@@ -1,4 +1,4 @@
-# fast-repeat v.1.0.23
+# fast-repeat v.0.1.24
 [![Build Status](https://travis-ci.org/fantasticMrFox/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/fantasticMrFox/ng-repeat-fast)
 
 Fast-repeat is a faster implementation 
@@ -16,7 +16,7 @@ Was build with performance in mind (to be honest, only).
 * Does not support ng-include on the repeated element.
     * Use nested `<div ng-include='...'></div>`. Make it automatic?
 * `track by` - supported.
-    * Except track by $index, use real fields.
+    * `track by $index` adds $$hashKey field into every item.
 * Animations. - *in progress*
     
 ## Basic Usage
