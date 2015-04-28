@@ -17,7 +17,7 @@ Was build with performance in mind (to be honest, only).
     * Use nested `<div ng-include='...'></div>`. Make it automatic?
 * `track by` - supported.
     * `track by $index` adds $$hashKey field into every item.
-* Animations. - *in progress*
+* Animations. - *planned*
     
 ## Basic Usage
 ```html
