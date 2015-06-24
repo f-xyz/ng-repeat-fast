@@ -1,11 +1,20 @@
-(function fastRepeatMain() {
+(function (factory) {
+    if (typeof require == 'function') {
+        var diff = require('f-xyz-diff');
+        factory(module.exports, diff);
+    } else {
+        factory(window, window.diff);
+    }
+})(function fastRepeatMain(exports, diff) {
     'use strict';
 
     var indexOf = [].indexOf;
+    var noop = function () {};
 
     ///////////////////////////////////////////////////////////////////////////
 
-    angular
+    exports.fastRepeat =
+         angular
         .module('fastRepeat', [])
         .directive('fastRepeat', function ($parse, $compile) {
             return {
@@ -176,14 +185,14 @@
                     get: function () {
                         return getNodeIndex(node);
                     },
-                    set: function () {}
+                    set: noop
                 },
                 $first: {
                     enumerable: true,
                     get: function () {
                         return getNodeIndex(node) === 0;
                     },
-                    set: function () {}
+                    set: noop
                 },
                 $last: {
                     enumerable: true,
@@ -191,29 +200,28 @@
                         var length = getModel().length;
                         return getNodeIndex(node) === length-1;
                     },
-                    set: function () {}
+                    set: noop
                 },
                 $middle: {
                     enumerable: true,
                     get: function () {
                         return !this.$first && !this.$last;
                     },
-                    set: function () {}
+                    set: noop
                 },
                 $even: {
                     enumerable: true,
                     get: function () {
                         return this.$index % 2 === 0;
                     },
-                    set: function () {
-                    }
+                    set: noop
                 },
                 $odd: {
                     enumerable: true,
                     get: function () {
                         return this.$index % 2 === 1;
                     },
-                    set: function () {}
+                    set: noop
                 }
             });
             return scope;
@@ -243,4 +251,4 @@
         });
     }
 
-}());
+});

@@ -1,6 +1,6 @@
 {
   "name": "fast-repeat",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "description": "Faster ng-repeat realization that caches DOM nodes.",
   "main": "fastRepeat.js",
   "directories": {
