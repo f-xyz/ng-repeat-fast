@@ -20,7 +20,7 @@ module.exports = function(config) {
             'bower_components/mocha/mocha.js',
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
-            'src/list-diff/index.js',
+            'node_modules/f-xyz-diff/dist/f-xyz-diff-0.1.22.js',
             'src/fastRepeat.js',
             'src/tests/spec.js'
         ],
