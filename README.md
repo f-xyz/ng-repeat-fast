@@ -1,11 +1,11 @@
 # fast-repeat v.0.1.24
-[![Build Status](https://travis-ci.org/fantasticMrFox/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/fantasticMrFox/ng-repeat-fast)
+[![Build Status](https://travis-ci.org/f-xyz/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/f-xyz/ng-repeat-fast)
 
 Fast-repeat is a faster implementation 
 of Angular directive `ng-repeat`.
 Was build with performance in mind (to be honest, only).
 
-* Uses [list-diff](https://github.com/fantasticMrFox/list-diff) for list comparison.
+* Uses [list-diff](https://github.com/f-xyz/list-diff) for list comparison.
 * Caches DOM nodes.
 * Works much faster than `ng-repeat`.
 * Supports *arrays of objects* only. So:
