@@ -8,9 +8,6 @@
 })(function fastRepeatMain(exports, diff) {
     'use strict';
 
-    var indexOf = [].indexOf;
-    var noop = function () {};
-
     ///////////////////////////////////////////////////////////////////////////
 
     exports.fastRepeat =
@@ -184,44 +181,38 @@
                     enumerable: true,
                     get: function () {
                         return getNodeIndex(node);
-                    },
-                    set: noop
+                    }
                 },
                 $first: {
                     enumerable: true,
                     get: function () {
                         return getNodeIndex(node) === 0;
-                    },
-                    set: noop
+                    }
                 },
                 $last: {
                     enumerable: true,
                     get: function () {
                         var length = getModel().length;
                         return getNodeIndex(node) === length-1;
-                    },
-                    set: noop
+                    }
                 },
                 $middle: {
                     enumerable: true,
                     get: function () {
                         return !this.$first && !this.$last;
-                    },
-                    set: noop
+                    }
                 },
                 $even: {
                     enumerable: true,
                     get: function () {
                         return this.$index % 2 === 0;
-                    },
-                    set: noop
+                    }
                 },
                 $odd: {
                     enumerable: true,
                     get: function () {
                         return this.$index % 2 === 1;
-                    },
-                    set: noop
+                    }
                 }
             });
             return scope;
@@ -237,7 +228,7 @@
 
         function getNodeIndex(node, absolute) {
             var nodeList = elementParentNode.childNodes;
-            var index = indexOf.call(nodeList, node);
+            var index = [].indexOf.call(nodeList, node);
             if (!absolute) {
                 index = index - elementNodeIndex - 1;
             }
