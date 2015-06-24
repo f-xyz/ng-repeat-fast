@@ -1,16 +1,16 @@
 {
   "name": "fast-repeat",
-  "version": "1.0.37",
+  "version": "1.0.46",
   "description": "Faster ng-repeat realization that caches DOM nodes.",
   "main": "fastRepeat.js",
   "directories": {
     "test": "tests"
   },
   "dependencies": {
-    "f-xyz-diff": "^0.1.22",
-    "gulp-karma": "0.0.4"
+    "f-xyz-diff": "^0.1.22"
   },
   "devDependencies": {
+    "gulp-karma": "0.0.4",
     "browserify": "^10.2.4",
     "chai": "^1.10.0",
     "coffee-script": "^1.9.3",
@@ -44,7 +44,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fantasticMrFox/ng-repeat-fast.git"
+    "url": "https://github.com/f-xyz/ng-repeat-fast.git"
   },
   "keywords": [
     "angular",
@@ -53,10 +53,10 @@
     "performance",
     "fast-repeat"
   ],
-  "author": "andr",
-  "license": "ISC",
+  "author": "f-xyz",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fantasticMrFox/ng-repeat-fast/issues"
+    "url": "https://github.com/f-xyz/ng-repeat-fast/issues"
   },
-  "homepage": "https://github.com/fantasticMrFox/ng-repeat-fast"
+  "homepage": "https://github.com/f-xyz/ng-repeat-fast"
 }

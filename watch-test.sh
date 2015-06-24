@@ -3,4 +3,4 @@
 spec=$1
 : ${spec:='spec'}
 
-mocha --watch test/index.js -R ${spec}
+gulp test-watch

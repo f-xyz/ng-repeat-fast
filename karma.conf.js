@@ -21,7 +21,7 @@ module.exports = function(config) {
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
             'node_modules/f-xyz-diff/dist/f-xyz-diff-0.1.22.js',
-            'src/fastRepeat.js',
+            'src/index.js',
             'src/tests/spec.js'
         ],
 

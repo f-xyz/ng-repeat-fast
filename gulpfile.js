@@ -17,9 +17,7 @@ function getBundleName(ext) {
 }
 
 gulp.task('default', ['build']);
-
 gulp.task('build', ['clean', 'bump', 'browserify', 'test']);
-
 gulp.task('clean', function (cb) {
     del(['dist/', 'coverage/', 'docs/'], cb);
 });
@@ -33,7 +31,7 @@ gulp.task('bump', function () {
 
 gulp.task('browserify', ['bump'], function () {
     var bundler = browserify({
-        entries: ['./index.js'],
+        entries: ['./src/index.js'],
         debug: true,
         detectGlobals: true,
         insertGlobals: false,
