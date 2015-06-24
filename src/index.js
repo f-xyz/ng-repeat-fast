@@ -10,8 +10,7 @@
 
     ///////////////////////////////////////////////////////////////////////////
 
-    exports.fastRepeat =
-         angular
+    exports.fastRepeat = angular
         .module('fastRepeat', [])
         .directive('fastRepeat', function ($parse, $compile) {
             return {

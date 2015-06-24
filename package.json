@@ -1,6 +1,6 @@
 {
   "name": "fast-repeat",
-  "version": "1.0.46",
+  "version": "1.0.47",
   "description": "Faster ng-repeat realization that caches DOM nodes.",
   "main": "fastRepeat.js",
   "directories": {
@@ -13,7 +13,6 @@
     "gulp-karma": "0.0.4",
     "browserify": "^10.2.4",
     "chai": "^1.10.0",
-    "coffee-script": "^1.9.3",
     "del": "^1.2.0",
     "gulp": "^3.9.0",
     "gulp-bump": "^0.3.1",
