@@ -1,8 +1,10 @@
 # ngRepeatFast
 [![Build Status](https://travis-ci.org/f-xyz/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/f-xyz/ng-repeat-fast)
 
-* Never removes DOM nodes. 
-* Instead it adds `ng-hide` class on corresponding node when item was removed.
+Incomplete but faster `ng-repeat` realisation. 
+It never removes DOM nodes. Though it adds `ng-hide` 
+class on corresponding node when item was 
+removed instead.
 
 * Supports `track by`.
 * Supports *arrays of objects* only. So:
