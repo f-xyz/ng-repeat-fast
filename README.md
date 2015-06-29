@@ -1,44 +1,37 @@
-# fast-repeat v.0.1.24
+# ngRepeatFast
 [![Build Status](https://travis-ci.org/f-xyz/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/f-xyz/ng-repeat-fast)
 
-Fast-repeat is a faster implementation 
-of Angular directive `ng-repeat`.
-Was build with performance in mind (to be honest, only).
+* Never removes DOM nodes. 
+* Instead it adds `ng-hide` class on corresponding node when item was removed.
 
-* Uses [list-diff](https://github.com/f-xyz/list-diff) for list comparison.
-* Caches DOM nodes.
-* Works much faster than `ng-repeat`.
+* Supports `track by`.
 * Supports *arrays of objects* only. So:
     * no arrays of primitive values.
     * no objects as model.
 * Does not create comment nodes.
 * Does not support ng-repeat-start & ng-repeat-end.
 * Does not support ng-include on the repeated element.
-    * Use nested `<div ng-include='...'></div>`. Make it automatic?
-* `track by` - supported.
-    * `track by $index` adds $$hashKey field into every item.
-* Animations. - *planned*
+    * Workaround: use nested `<div ng-include='...'></div>`.
+* Animations. - planned.
     
 ## Basic Usage
 ```html
-<div class="list-item" fast-repeat="item in list | filter: search">
+<div class="list-item" ng-repeat-fast="item in list | filter: search">
     {{ item.value }}
 </div>
 ```
 
 ## Render just once
-
-Works with one-time binding syntax.
-
+one-time binding
 ```html
-<div class="list-item" fast-repeat="item in ::list">
+<div class="list-item" ng-repeat-fast="item in ::list">
     {{ ::item.value }}
 </div>
 ```
 
 ## With `ng-include`
 ```html
-<div class="list-item" fast-repeat="item in list | filter: search">
+<div class="list-item" ng-repeat-fast="item in list | filter: search">
      <div ng-include="'item-template.html'"></div>
 </div>
 ```

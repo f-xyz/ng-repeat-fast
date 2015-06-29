@@ -1,15 +1,13 @@
 {
-    "name": "fast-repeat",
+    "name": "ng-repeat-fast",
     "version": "0.1.0",
-    "homepage": "https://github.com/fantasticMrFox/ng-repeat-fast",
-    "authors": ["andr"],
+    "homepage": "https://github.com/f-xyz/ng-repeat-fast",
+    "authors": ["f-xyz"],
     "description": "Faster ng-repeat realization that caches DOM nodes.",
     "main": "fastRepeat.js",
     "keywords": [
-        "fast-repeat",
         "angular",
-        "ng-repeat",
-        "performance"
+        "ng-repeat"
     ],
     "license": "MIT",
     "ignore": [

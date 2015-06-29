@@ -22,7 +22,7 @@ module.exports = function(config) {
             'bower_components/angular-mocks/angular-mocks.js',
             'node_modules/f-xyz-diff/dist/f-xyz-diff-0.1.22.js',
             'src/index.js',
-            'src/tests/spec.js'
+            'tests/spec.js'
         ],
 
 

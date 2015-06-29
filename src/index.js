@@ -6,55 +6,48 @@
     } else {
         factory(window, window.diff);
     }
-})(function fastRepeatMain(exports, diff) {
+})(function (exports, diff) {
     'use strict';
 
     ///////////////////////////////////////////////////////////////////////////
 
-    exports.fastRepeat = angular
-        .module('fastRepeat', [])
-        .directive('fastRepeat', function ($parse, $compile) {
+    exports.ngRepeatFast = angular
+        .module('ngRepeatFast', [])
+        .directive('ngRepeatFast', function ($parse, $compile) {
             return {
                 scope: true,
                 restrict: 'A',
                 priority: 1000,
                 terminal: true,
                 link: function ($scope, $element, $attrs) {
-                    fastRepeatLink($scope, $element, $attrs, $parse, $compile);
+                    ngRepeatFastLink($scope, $element, $attrs, $parse, $compile);
                 }
             };
         });
 
     ///////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @param $scope
-     * @param $element
-     * @param $parse
-     * @param $compile
-     * @param {{ fastRepeat: string }} $attrs
-     */
-    function fastRepeatLink($scope, $element, $attrs, $parse, $compile) {
-        // todo - directive: dont-evaluate-if-out-screen
-        // todo - animation support
+    function ngRepeatFastLink($scope, $element, $attrs, $parse, $compile) {
+
+        // todo - animations support
         // todo - garbage collection for DOM nodes (?) timer-based?
 
         var HASH_KEY = '$$hashKey';
 
         if ('ngInclude' in $attrs) {
-            throw Error('fastRepeat: ngInclude on repeated ' +
+            throw Error('ngRepeatFast: ngInclude on repeating ' +
                         'element is not supported. ' +
-                        'Please create inner element with ng-include.');
+                        'Please create nested element with ng-include.');
         }
 
         // parse ng-repeat expression /////////////////////////////////////////
 
         var rx = /^\s*(\w+)\sin\s(.+?)(\strack by\s(.+?))?$/;
-        var match = $attrs.fastRepeat.match(rx);
+        var match = $attrs.ngRepeatFast.match(rx);
         if (!match) {
-            throw Error('fastRepeat: expected fastRepeat in form of ' +
+            throw Error('ngRepeatFast: expected ngRepeatFast in form of ' +
                         '`{item} in {array} [| filter, etc]` [track by \'{field}\'] ' +
-                        'but got `' + $attrs.fastRepeat + '`');
+                        'but got `' + $attrs.ngRepeatFast + '`');
         }
 
         var iteratorName = match[1];
@@ -62,8 +55,8 @@
         var trackBy = match[4] || HASH_KEY;
         var model = getModel();
         if (!Array.isArray(model)) {
-            throw Error('fastRepeat: expected model `' + $attrs.fastRepeat + '` ' +
-                        'to be an array but got: ' + String(model));
+            throw Error('ngRepeatFast: expected model `' + $attrs.ngRepeatFast + '` ' +
+                        'to be an array but got: ' + model);
         }
 
         // build DOM //////////////////////////////////////////////////////////
@@ -74,7 +67,7 @@
         var elementParentNode = elementNode.parentNode;
         var elementNodeIndex = getNodeIndex(elementNode, true);
         var templateNode = elementNode.cloneNode(true);
-        templateNode.removeAttribute('fast-repeat');
+        templateNode.removeAttribute('ng-repeat-fast');
 
         var prevNode = elementNode;
         model.forEach(function (item) {
@@ -89,8 +82,7 @@
         });
         hideNode(elementNode);
 
-        // watch model for changes if
-        // it is not one-time binding
+        // watch model for changes if it is not one-time binding
         var unwatchModel;
         if (!/^::/.test(expression)) {
             unwatchModel = $scope.$watchCollection(getModel, renderChanges);

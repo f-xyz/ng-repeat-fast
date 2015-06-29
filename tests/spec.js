@@ -4,9 +4,9 @@
     chai.should();
 
     var $compile, $rootScope;
-    var app = angular.module('app', ['fastRepeat']);
+    var app = angular.module('app', ['ngRepeatFast']);
     var fastRepeatTemplate =
-        '<div fast-repeat="item in list">' +
+        '<div ng-repeat-fast="item in list">' +
             '{{ ::item.value }}' +
         '</div>';
 
@@ -47,10 +47,10 @@
         it('parses ng-repeat expression', function () {
             $rootScope.list = [{ value: 0 }, { value: 1 }];
             var templates = [
-                '<div fast-repeat="item in list"></div>',
-                '<div fast-repeat="item in list | filter: 1"></div>',
-                '<div fast-repeat="item in ::list"></div>',
-                '<div fast-repeat="item in ::list track by value"></div>'
+                '<div ng-repeat-fast="item in list"></div>',
+                '<div ng-repeat-fast="item in list | filter: 1"></div>',
+                '<div ng-repeat-fast="item in ::list"></div>',
+                '<div ng-repeat-fast="item in ::list track by value"></div>'
             ];
             templates.forEach(function (template) {
                 $compile(template)($rootScope);
@@ -60,7 +60,7 @@
         it('parses `track by` expression', function () {
             $rootScope.list = [{ value: 0 }, { value: 1 }];
             var template =
-                '<div fast-repeat="item in list track by value">' +
+                '<div ng-repeat-fast="item in list track by value">' +
                     '{{ ::item.value }}' +
                 '</div>';
             var container = createElement(template);
@@ -76,7 +76,7 @@
         });
 
         it('throws if expression is invalid', function () {
-            var template = '<div fast-repeat="!@#"></div>';
+            var template = '<div ng-repeat-fast="!@#"></div>';
             var action = function () {
                 $compile(template)($rootScope);
             };
@@ -85,7 +85,7 @@
 
         it('throws if ng-include is set on repeated element', function () {
             $rootScope.list = [];
-            var template = '<div fast-repeat="list" ng-include></div>';
+            var template = '<div ng-repeat-fast="list" ng-include></div>';
             var action = function () {
                 $compile(template)($rootScope);
             };
@@ -106,7 +106,7 @@
         it('understands one-time binding ::', function () {
             $rootScope.list = [{ value: 0 }, { value: 1 }];
             var template =
-                '<div fast-repeat="item in ::list">' +
+                '<div ng-repeat-fast="item in ::list">' +
                     '{{ ::item.value }}' +
                 '</div>';
             var container = createElement(template);
@@ -234,7 +234,7 @@
             $rootScope.list = [];
             var template =
                 '<span>-----</span>' +
-                    '<div fast-repeat="item in list">' +
+                    '<div ng-repeat-fast="item in list">' +
                         '{{ ::item.value }}' +
                     '</div>' +
                 '<span>+++++</span>';
@@ -272,7 +272,7 @@
         it('corrects node indexes if they added again', function () {
             $rootScope.list = [{ value: 0 }, { value: 1 }];
             var template =
-                '<div fast-repeat="item in list track by value">' +
+                '<div ng-repeat-fast="item in list track by value">' +
                     '{{ ::item.value }}' +
                 '</div>';
             var container = createElement(template);

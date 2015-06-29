@@ -1,3 +1,4 @@
+var fs = require('fs');
 var gulp = require('gulp');
 var bump = require('gulp-bump');
 var mocha = require('gulp-spawn-mocha');
@@ -11,10 +12,22 @@ var del = require('del');
 var browserify = require('browserify');
 var _ = require('lodash');
 
-function getBundleName(ext) {
-    var pkg = require('./package.json');
-    return pkg.name + '-' + pkg.version + ext;
-}
+var getPackageJson = function (pkg) {
+    return pkg || require('./package.json');
+};
+
+var getName = function (pkg) {
+    return getPackageJson(pkg).name;
+};
+
+var getVersion = function (pkg) {
+    return getPackageJson(pkg).version;
+};
+
+var getBundleName = function (ext) {
+    var pkg = getPackageJson();
+    return getName(pkg) + '-' + getVersion(pkg) + ext;
+};
 
 gulp.task('default', ['build']);
 gulp.task('build', ['clean', 'bump', 'copy', 'browserify', 'test']);
@@ -24,15 +37,15 @@ gulp.task('clean', function (cb) {
 });
 
 gulp.task('bump', function () {
-    return gulp
-        .src('./package.json')
+    return gulp.src('./package.json')
         .pipe(bump({ type: 'build-version' }))
         .pipe(gulp.dest('./'));
 });
 
 gulp.task('copy', function () {
-    return gulp
-        .src('bower_components/angular/angular.min.js')
+    gulp.src('bower_components/angular/angular.min.js')
+        .pipe(gulp.dest('examples/'));
+    gulp.src('bower_components/bootstrap/dist/css/bootstrap.css')
         .pipe(gulp.dest('examples/'));
 });
 
