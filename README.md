@@ -1,19 +1,20 @@
 # ngRepeatFast
 [![Build Status](https://travis-ci.org/f-xyz/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/f-xyz/ng-repeat-fast)
 
-Incomplete but faster `ng-repeat` realisation. 
-It never removes DOM nodes. Though it adds `ng-hide` 
-class on corresponding node when item was 
+Incomplete but faster `ng-repeat` realization.
+Never removes DOM nodes. It adds `ng-hide`
+class on corresponding node when item was
 removed instead.
 
 * Supports `track by`.
-* Supports *arrays of objects* only. So:
+* Supports `$first`, `$last`, `$middle`, `$index`, `$even` and `$odd`.
+* Supports *arrays of objects* only. So
     * no arrays of primitive values.
     * no objects as model.
 * Does not create comment nodes.
 * Does not support ng-repeat-start & ng-repeat-end.
-* Does not support ng-include on the repeated element.
-    * Workaround: use nested `<div ng-include='...'></div>`.
+* Does not support ng-include on repeating element.
+    * Workaround: use nested element `<div ng-include='...'></div>`.
 * Animations. - planned.
     
 ## Basic Usage

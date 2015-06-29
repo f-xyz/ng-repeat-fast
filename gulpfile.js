@@ -44,9 +44,9 @@ gulp.task('bump', function () {
 
 gulp.task('copy', function () {
     gulp.src('bower_components/angular/angular.min.js')
-        .pipe(gulp.dest('examples/'));
+        .pipe(gulp.dest('site/'));
     gulp.src('bower_components/bootstrap/dist/css/bootstrap.css')
-        .pipe(gulp.dest('examples/'));
+        .pipe(gulp.dest('site/'));
 });
 
 gulp.task('browserify', ['bump'], function () {
