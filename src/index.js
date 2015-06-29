@@ -1,4 +1,5 @@
 (function (factory) {
+    /* istanbul ignore next */
     if (typeof require == 'function') {
         var diff = require('f-xyz-diff');
         factory(module.exports, diff);

@@ -17,7 +17,8 @@ function getBundleName(ext) {
 }
 
 gulp.task('default', ['build']);
-gulp.task('build', ['clean', 'bump', 'browserify', 'test']);
+gulp.task('build', ['clean', 'bump', 'copy', 'browserify', 'test']);
+
 gulp.task('clean', function (cb) {
     del(['dist/', 'coverage/', 'docs/'], cb);
 });
@@ -27,6 +28,12 @@ gulp.task('bump', function () {
         .src('./package.json')
         .pipe(bump({ type: 'build-version' }))
         .pipe(gulp.dest('./'));
+});
+
+gulp.task('copy', function () {
+    return gulp
+        .src('bower_components/angular/angular.min.js')
+        .pipe(gulp.dest('examples/'));
 });
 
 gulp.task('browserify', ['bump'], function () {

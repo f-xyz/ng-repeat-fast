@@ -7,6 +7,8 @@ gulp clean build
 
 git add --all .
 git commit -m "${commitMessage}"
-git push -u origin master gh-pages
 
-#sudo npm publish
+git branch -D gh-pages
+git branch gh-pages
+
+git push -u origin master gh-pages
