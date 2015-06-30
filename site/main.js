@@ -22,7 +22,7 @@ function scopeProfiler($scope) {
 
 // App ////////////////////////////////////////////////////////////////////////
 
-var app = angular.module('app', ['fastRepeat']);
+var app = angular.module('app', ['ngRepeatFast']);
 
 app.config(function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);

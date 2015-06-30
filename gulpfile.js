@@ -11,6 +11,9 @@ var buffer = require('vinyl-buffer');
 var del = require('del');
 var browserify = require('browserify');
 var _ = require('lodash');
+var browserSync = require('browser-sync');
+
+///////////////////////////////////////////////////////////////////////////////
 
 var getPackageJson = function (pkg) {
     return pkg || require('./package.json');
@@ -28,6 +31,8 @@ var getBundleName = function (ext) {
     var pkg = getPackageJson();
     return getName(pkg) + '-' + getVersion(pkg) + ext;
 };
+
+///////////////////////////////////////////////////////////////////////////////
 
 gulp.task('default', ['build']);
 gulp.task('build', ['clean', 'bump', 'copy', 'browserify', 'test']);
@@ -87,4 +92,26 @@ gulp.task('test-watch', function () {
             configFile: 'karma.conf.js',
             action: 'start'
         }));
+});
+
+gulp.task('http-server', function () {
+    browserSync({
+        server: {
+            baseDir: './',
+            directory: true
+        },
+        files: ['site/**.*'],
+        open: false,
+        notify: false,
+        injectChanges: true,
+        port: 5000
+    });
+    //gulp.watch([
+    //    'site/**.{js|html|css}',
+    //    'functional-tests/**.{js|html|css}',
+    //    'src/**.{js|html|css}'
+    //], /*['copy'], */function () {
+    //    console.log('RELOAD!');
+    //    browserSync.reload();
+    //});
 });

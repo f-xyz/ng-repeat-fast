@@ -1,6 +1,6 @@
 {
   "name": "ng-repeat-fast",
-  "version": "0.2.6",
+  "version": "0.2.8",
   "description": "Faster ng-repeat realization that caches DOM nodes.",
   "main": "fastRepeat.js",
   "directories": {
@@ -10,6 +10,7 @@
     "f-xyz-diff": "^0.1.22"
   },
   "devDependencies": {
+    "browser-sync": "^2.7.13",
     "browserify": "^10.2.4",
     "chai": "^1.10.0",
     "colors": "^1.0.3",
