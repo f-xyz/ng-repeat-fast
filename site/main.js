@@ -1,26 +1,44 @@
+// Utils //////////////////////////////////////////////////////////////////////
+
+function pad(str, n, char) {
+    while (str.length < n) {
+        str = char + str;
+    }
+    return str;
+}
+
+function scopeProfiler($scope) {
+    var scopeApply = $scope.$apply;
+    $scope.$apply = function () {
+        console.time('$apply');
+        var result = scopeApply.apply($scope, arguments);
+        setTimeout(function () {
+            console.timeEnd('$apply');
+        }, 0);
+        return result;
+    };
+    return $scope;
+}
+
+// App ////////////////////////////////////////////////////////////////////////
+
 var app = angular.module('app', ['fastRepeat']);
+
 app.config(function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);
 });
+
 app.run(function () {
    document.body.className += ' on';
 });
+
 app.controller('main', function ($scope) {
+
     var N = 3;
     $scope.useFastRepeat = true;
     $scope.list = [];
     $scope.search = '';
 
-    setTimeout(function () {
-        //$scope.search = 'x';
-        //$scope.$digest();
-        //$scope.swap();
-        //$scope.$digest();
-        //$scope.search = '';
-        //$scope.$digest();
-    }, 0);
-
-    // getters
     $scope.filter = function (list, what) {
         return list.filter(function (x) {
             return x.value.indexOf(what) != -1;
@@ -34,30 +52,38 @@ app.controller('main', function ($scope) {
         $scope.list.push({ value: x });
     };
 
-    // actions
+    // actions ////////////////////////////////////////////////////////////////
+
     $scope.toggleFastRepeat = function () {
         $scope.useFastRepeat = !$scope.useFastRepeat;
     };
+
     $scope.addToBegin = function () {
         $scope.list.unshift({ value: 'first one' });
     };
+
     $scope.add2nd = function () {
         var item = { value: '2nd' };
         var head = $scope.list.slice(0, 1);
         var tail = $scope.list.slice(1);
         $scope.list = head.concat([item], tail);
     };
+
     $scope.addToEnd = function () {
         $scope.list.push({ value: 'last one' });
     };
+
     $scope.reverse = function () {
         $scope.list = $scope.list.reverse();
     };
+
     $scope.swap = function () {
         var tmp = $scope.list[0];
         $scope.list[0] = $scope.list[1];
         $scope.list[1] = tmp;
     };
+
+    ///////////////////////////////////////////////////////////////////////////
 
     for (var i = 0; i < N; ++i) {
         $scope.add(i);
@@ -65,20 +91,8 @@ app.controller('main', function ($scope) {
 
     scopeProfiler($scope);
     window.main = $scope;
-
-    function scopeProfiler($scope) {
-        var scopeApply = $scope.$apply;
-        $scope.$apply = function () {
-            console.time('$apply');
-            var result = scopeApply.apply($scope, arguments);
-            setTimeout(function () {
-                console.timeEnd('$apply');
-            }, 0);
-            return result;
-        };
-        return $scope;
-    }
 });
+
 app.filter('highlight', function ($sce) {
     return function (str, search) {
         if (str && search) {
@@ -93,9 +107,3 @@ app.filter('highlight', function ($sce) {
         }
     };
 });
-function pad(str, n, char) {
-    while (str.length < n) {
-        str = char + str;
-    }
-    return str;
-}
