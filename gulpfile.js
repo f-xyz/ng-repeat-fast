@@ -100,18 +100,13 @@ gulp.task('http-server', function () {
             baseDir: './',
             directory: true
         },
-        files: ['site/**.*'],
+        files: [
+            'site/**/*.*',
+            'src/**/*.*'
+        ],
         open: false,
-        notify: false,
+        notify: true,
         injectChanges: true,
         port: 5000
     });
-    //gulp.watch([
-    //    'site/**.{js|html|css}',
-    //    'functional-tests/**.{js|html|css}',
-    //    'src/**.{js|html|css}'
-    //], /*['copy'], */function () {
-    //    console.log('RELOAD!');
-    //    browserSync.reload();
-    //});
 });

@@ -1,5 +1,13 @@
 // Utils //////////////////////////////////////////////////////////////////////
 
+function getNFromUrl() {
+    return Number(location.hash.replace(/\D/g, ''));
+}
+
+function isLocalhost() {
+    return location.hostname == 'localhost';
+}
+
 function pad(str, n, char) {
     while (str.length < n) {
         str = char + str;
@@ -28,13 +36,9 @@ app.config(function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);
 });
 
-app.run(function () {
-   document.body.className += ' on';
-});
-
 app.controller('main', function ($scope) {
+    var N = getNFromUrl() || isLocalhost() ? 10 : 10000;
 
-    var N = 3;
     $scope.useFastRepeat = true;
     $scope.list = [];
     $scope.search = '';
@@ -47,8 +51,7 @@ app.controller('main', function ($scope) {
 
     $scope.add = function (i) {
         var x = '';
-        while (x.length < 20)
-            x += i;
+        while (x.length < 20) x += i;
         $scope.list.push({ value: x });
     };
 
@@ -88,6 +91,8 @@ app.controller('main', function ($scope) {
     for (var i = 0; i < N; ++i) {
         $scope.add(i);
     }
+
+    document.body.className += ' on';
 
     scopeProfiler($scope);
     window.main = $scope;

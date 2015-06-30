@@ -1,4 +1,4 @@
-@import 'bootstrap';
+@import 'bootstrap/variables';
 @import 'bootstrap/mixins/vendor-prefixes';
 @import './animations';
 
@@ -11,7 +11,7 @@
 [class^=col-] {
   margin: 0 !important;
   padding: 0 !important;
-//  outline: 1px dashed #0b97c4;
+  //outline: 3px solid red;
 }
 
 .ng-hide:not(.ng-hide-animate) {
@@ -71,22 +71,6 @@ section {
   letter-spacing: @step/2;
   & > * { letter-spacing: .1px; }
 }
-
-.generate-char(@i) when (@i >= 0) {
-  @char-color: spin(@color-text, @i * 20%);
-  .char-@{i} {
-    margin-left: 16px;
-    transition: 1s;
-    color: @char-color;
-    .text-shadow-mixin(@char-color);
-  }
-  .on .char-@{i} {
-    .animation(opacity 1s ease-in-out);
-  }
-  .generate-char(@i - 1);
-}
-.generate-char(0) {}
-.generate-char(16);
 
 button {
   position: relative;
@@ -168,3 +152,19 @@ input[type=search] {
   display: inline-block;
   border-radius: @border-radius;
 }
+
+.generate-char(@i) when (@i >= 0) {
+  @char-color: spin(@color-text, @i * 20%);
+  .char-@{i} {
+    margin-left: 16px;
+    transition: 1s;
+    color: @char-color;
+    .text-shadow-mixin(@char-color);
+  }
+  .on .char-@{i} {
+    .animation(opacity 1s ease-in-out);
+  }
+  .generate-char(@i - 1);
+}
+.generate-char(0) {}
+.generate-char(16);
