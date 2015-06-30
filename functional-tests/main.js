@@ -22,7 +22,7 @@ function scopeProfiler($scope) {
 
 // App ////////////////////////////////////////////////////////////////////////
 
-var app = angular.module('app', ['fastRepeat']);
+var app = angular.module('app', ['ngRepeatFast']);
 
 app.config(function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);
@@ -34,7 +34,7 @@ app.run(function () {
 
 app.controller('main', function ($scope) {
 
-    var N = 3;
+    var N = 1e3;
     $scope.useFastRepeat = true;
     $scope.list = [];
     $scope.search = '';
