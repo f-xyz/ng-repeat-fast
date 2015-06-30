@@ -102,7 +102,8 @@ gulp.task('http-server', function () {
         },
         files: [
             'site/**/*.*',
-            'src/**/*.*'
+            'src/**/*.*',
+            'tests/**/*.*'
         ],
         open: false,
         notify: true,
