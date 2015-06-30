@@ -12,3 +12,5 @@ git branch -D gh-pages
 git branch gh-pages
 
 git push -u origin master gh-pages
+
+sudo npm publish
