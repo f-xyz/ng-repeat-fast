@@ -1,6 +1,9 @@
 # ngRepeatFast
 [![Build Status](https://travis-ci.org/f-xyz/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/f-xyz/ng-repeat-fast)
 
+[Demo](http://f-xyz.github.io/ng-repeat-fast/site/index.html) | 
+[Tests](http://f-xyz.github.io/ng-repeat-fast/test/index.html)
+
 Incomplete but faster `ng-repeat` realization.
 Never removes DOM nodes. It adds `ng-hide`
 class on corresponding node when item was
@@ -16,9 +19,6 @@ removed instead.
 * Does not support ng-include on repeating element.
     * Workaround: use nested element `<div ng-include='...'></div>`.
 * Animations. - planned.
-
-[Demo](http://f-xyz.github.io/ng-repeat-fast/site/index.html)
-[Tests](http://f-xyz.github.io/ng-repeat-fast/test/index.html)
     
 ## Basic Usage
 ```html

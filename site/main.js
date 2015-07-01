@@ -4,17 +4,6 @@ function getNFromUrl() {
     return Number(location.hash.replace(/\D/g, ''));
 }
 
-function isLocalhost() {
-    return location.hostname == 'localhost';
-}
-
-function pad(str, n, char) {
-    while (str.length < n) {
-        str = char + str;
-    }
-    return str;
-}
-
 function scopeProfiler($scope) {
     var scopeApply = $scope.$apply;
     $scope.$apply = function () {
@@ -37,7 +26,7 @@ app.config(function ($compileProvider) {
 });
 
 app.controller('main', function ($scope) {
-    var N = getNFromUrl() || (isLocalhost() ? 10 : 1000);
+    var N = getNFromUrl() || 100;
 
     $scope.useFastRepeat = true;
     $scope.list = [];
