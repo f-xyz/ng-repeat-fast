@@ -37,7 +37,7 @@ app.config(function ($compileProvider) {
 });
 
 app.controller('main', function ($scope) {
-    var N = getNFromUrl() || isLocalhost() ? 10 : 10000;
+    var N = getNFromUrl() || isLocalhost() ? 10 : 1000;
 
     $scope.useFastRepeat = true;
     $scope.list = [];

@@ -16,6 +16,9 @@ removed instead.
 * Does not support ng-include on repeating element.
     * Workaround: use nested element `<div ng-include='...'></div>`.
 * Animations. - planned.
+
+[Demo](http://f-xyz.github.io/ng-repeat-fast/site/index.html)
+[Tests](http://f-xyz.github.io/ng-repeat-fast/test/index.html)
     
 ## Basic Usage
 ```html
