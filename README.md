@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/f-xyz/ng-repeat-fast.svg?branch=master)](https://travis-ci.org/f-xyz/ng-repeat-fast)
 
 [Demo](http://f-xyz.github.io/ng-repeat-fast/site/index.html) | 
-[Tests](http://f-xyz.github.io/ng-repeat-fast/test/index.html)
+[Tests](http://f-xyz.github.io/ng-repeat-fast/tests/index.html)
 
 Incomplete but faster `ng-repeat` realization.
 Never removes DOM nodes. It adds `ng-hide`
