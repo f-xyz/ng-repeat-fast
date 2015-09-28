@@ -13,17 +13,22 @@
 
     exports.ngRepeatFast = angular
         .module('ngRepeatFast', [])
-        .directive('ngRepeatFast', function ($parse, $compile) {
-            return {
-                scope: true,
-                restrict: 'A',
-                priority: 1000,
-                terminal: true,
-                link: function ($scope, $element, $attrs) {
-                    ngRepeatFastLink($scope, $element, $attrs, $parse, $compile);
-                }
-            };
-        });
+        .directive('ngRepeatFast', [
+            '$parse', '$compile',
+            ngRepeatFastFactory
+        ]);
+
+    function ngRepeatFastFactory($parse, $compile) {
+        return {
+            scope: true,
+            restrict: 'A',
+            priority: 1000,
+            terminal: true,
+            link: function ($scope, $element, $attrs) {
+                ngRepeatFastLink($scope, $element, $attrs, $parse, $compile);
+            }
+        };
+    }
 
     ///////////////////////////////////////////////////////////////////////////
 
